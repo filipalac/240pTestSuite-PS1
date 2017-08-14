@@ -471,6 +471,8 @@ void white_and_rgb_screens()
 		GsSortCls(r, g, b);
 
 		switch (input_tap()) {
+		case PAD_TRIANGLE:
+			return;
 		case PAD_CROSS:
 			if (cnt == 9)
 				cnt = 1;
@@ -482,12 +484,6 @@ void white_and_rgb_screens()
 				cnt = 9;
 			else 
 				cnt = 8;
-			break;
-		case PAD_TRIANGLE:
-			return;
-		case PAD_SQUARE:
-			GsSetVideoModeEx(320, 240, VMODE_NTSC, 1, 0, 0);
-			draw_menu_font(0, 4, 4, 200, 200, "dsfdsaf");
 			break;
 		}
 
