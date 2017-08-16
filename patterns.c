@@ -298,7 +298,8 @@ void grid()
 
 		switch (gridsel) {
 		case 0:
-			sprite224.h = 224;
+			sprite224.y = background.y = 8;
+			sprite224.h = background.h = 224;
 			sprite224.w = 256;
 			sprite224.x = 0;
 			sprite224.tpage = 5;
@@ -313,7 +314,8 @@ void grid()
 			}
 			break;
 		case 1:
-			sprite240.h = 240;
+			sprite240.y = background.y = 0;
+			sprite240.h = background.h = 240;
 			sprite240.w = 256;
 			sprite240.x = 0;
 			sprite240.tpage = 7;
@@ -328,7 +330,8 @@ void grid()
 			}
 			break;
 		case 2:
-			sprite256.h = 256;
+			sprite256.y = background.y = 0;
+			sprite256.h = background.h = 256;
 			sprite256.w = 256;
 			sprite256.x = 0;
 			sprite256.tpage = 9;

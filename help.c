@@ -61,7 +61,7 @@ void draw_help(int option)
 
 		switch (option) {
 		case HELP_CREDITS:
-			draw_font(1, 235, 42, 255, 255, 255, "14.08.2017");
+			draw_font(1, 235, 42, 255, 255, 255, "16.08.2017");
 
 			draw_font(1, 40, 55, 0, 255, 0, "Code, Convergence and Focus Pattern");
 			draw_font(1, 40, 65, 255, 255, 255, "Filip Alac");
