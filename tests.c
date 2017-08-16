@@ -388,12 +388,14 @@ void scroll_test()
 
 void striped_test(char drop_shadow)
 {
+	psx_pad_state padbuf;
+	signed char *current_pad_x = NULL;
+	signed char *current_pad_y = NULL;
 	char orientation = 0;
 	char background = 0;
 	char image_uploaded = 0;
 	char cursor = 0;
 	char even = 0;
-	unsigned short padbuf;
 	int i, j = 0;
 
 	GsImage  image;
@@ -441,11 +443,39 @@ void striped_test(char drop_shadow)
 			break;
 		}
 
-		PSX_ReadPad(&padbuf, NULL);
-		if (padbuf & PAD_LEFT) striped.x > 0 ? striped.x-- : 0;
-		if (padbuf & PAD_RIGHT) striped.x < 288 ? striped.x++ : 0;
-		if (padbuf & PAD_UP) striped.y > 0 ? striped.y-- : 0;
-		if (padbuf & PAD_DOWN) striped.y < y_res - 32 ? striped.y++ : 0;
+		PSX_PollPad(0, &padbuf);
+		if (padbuf.buttons & PAD_LEFT) striped.x > 0 ? striped.x-- : 0;
+		if (padbuf.buttons & PAD_RIGHT) striped.x < x_res - striped.w ? striped.x++ : 0;
+		if (padbuf.buttons & PAD_UP) striped.y > 0 ? striped.y-- : 0;
+		if (padbuf.buttons & PAD_DOWN) striped.y < y_res - striped.h ? striped.y++ : 0;
+
+		if (padbuf.type == 2 || padbuf.type == 3) {
+			if (padbuf.type == 2) {
+				current_pad_x = &padbuf.extra.analogJoy.x[1];
+				current_pad_y = &padbuf.extra.analogJoy.y[1];
+			} else {
+				current_pad_x = &padbuf.extra.analogPad.x[1];
+				current_pad_y = &padbuf.extra.analogPad.y[1];
+			}
+
+			if (striped.x >= 0 && striped.x <= x_res - striped.w)
+				striped.x += *current_pad_x / 24;
+
+			if (striped.y >= 0 && striped.y <= y_res - striped.h)
+				striped.y += *current_pad_y / 24;
+
+			if (striped.x > x_res - striped.w)
+				striped.x = x_res - striped.w;
+
+			if (striped.y > y_res - striped.h)
+				striped.y = y_res - striped.h;
+
+			if (striped.x < 0)
+				striped.x = 0;
+
+			if (striped.y < 0)
+				striped.y = 0;
+		}
 
 		switch (background) {
 		case 0:
@@ -521,12 +551,16 @@ void striped_test(char drop_shadow)
 					GsSortSprite(&shadow);
 				break;
 			case 1:
-				if (padbuf & PAD_RIGHT && !orientation) {
-				       	buzzbomber.attribute = buzzbombershadow.attribute = H_FLIP;
+				if ((padbuf.buttons & PAD_LEFT && orientation)
+					|| ( *current_pad_x <= - 24 && orientation)) {
+
+				       	buzzbomber.attribute = buzzbombershadow.attribute = 0;
 					orientation = !orientation;
 				}
-				if (padbuf & PAD_LEFT && orientation) {
-				       	buzzbomber.attribute = buzzbombershadow.attribute = 0;
+				else if ((padbuf.buttons & PAD_RIGHT && !orientation)
+					|| ( *current_pad_x >= 24 && !orientation)) { 
+
+				       	buzzbomber.attribute = buzzbombershadow.attribute = H_FLIP;
 					orientation = !orientation;
 				}
 				GsSortSprite(&buzzbomber);
