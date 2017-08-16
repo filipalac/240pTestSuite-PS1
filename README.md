@@ -25,6 +25,7 @@ This is free software, with full source code available under the GPL.
 * Alternating 240p/480i test
 * 100 IRE test pattern
 * Interlaced video modes
+* Only 240/256 resolution (except grid)
 
 Contributors
 ------------
