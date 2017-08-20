@@ -98,13 +98,39 @@ void upload_sprite(GsImage *image, GsSprite *sprite, void *compressed_buffer)
 
 unsigned short input_tap()
 {
-	unsigned short padbuf;
-	static unsigned short oldinput;
+	static unsigned short old_input;
 
-	PSX_ReadPad(&padbuf, NULL);
-	input = padbuf & ~oldinput;
-	oldinput = padbuf;
-	
+	psx_pad_state padbuf;
+	PSX_PollPad(0, &padbuf);
+
+	if (padbuf.type == 2 || padbuf.type == 3) {
+		signed char *current_pad_x = NULL;
+		signed char *current_pad_y = NULL;
+
+		if (padbuf.type == 2) {
+			current_pad_x = &padbuf.extra.analogJoy.x[1];
+			current_pad_y = &padbuf.extra.analogJoy.y[1];
+		} else {
+			current_pad_x = &padbuf.extra.analogPad.x[1];
+			current_pad_y = &padbuf.extra.analogPad.y[1];
+		}
+
+		if ((*current_pad_x / 48) > 0)
+			padbuf.buttons += PAD_RIGHT;
+
+		if ((*current_pad_x / 48) < 0)
+			padbuf.buttons += PAD_LEFT;
+
+		if ((*current_pad_y / 48) < 0)
+			padbuf.buttons += PAD_UP;
+
+		if ((*current_pad_y / 48) > 0)
+			padbuf.buttons += PAD_DOWN;
+	}
+
+	input = padbuf.buttons & ~old_input;
+	old_input = padbuf.buttons;
+
 	return input;
 }
 

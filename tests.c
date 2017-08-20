@@ -91,7 +91,7 @@ void grid_scroll_test()
 
 void backlight_zone()
 {
-	unsigned short padbuf;
+	psx_pad_state padbuf;
 
 	GsRectangle rectangle;
 	rectangle.r = rectangle.g = rectangle.b = 255;
@@ -104,11 +104,42 @@ void backlight_zone()
 		flip_buffer();
 		GsSortCls(0, 0, 0);
 
-		PSX_ReadPad(&padbuf, NULL);
-		if (padbuf & PAD_LEFT) rectangle.x > 0 ? rectangle.x-- : 0;
-		if (padbuf & PAD_RIGHT) rectangle.x < 319 ? rectangle.x++ : 0;
-		if (padbuf & PAD_UP) rectangle.y > 0 ? rectangle.y-- : 0;
-		if (padbuf & PAD_DOWN) rectangle.y < y_res - 1 ? rectangle.y++ : 0;
+		PSX_PollPad(0, &padbuf);
+		if (padbuf.buttons & PAD_LEFT) rectangle.x > 0 ? rectangle.x-- : 0;
+		if (padbuf.buttons & PAD_RIGHT) rectangle.x < x_res - rectangle.w ? rectangle.x++ : 0;
+		if (padbuf.buttons & PAD_UP) rectangle.y > 0 ? rectangle.y-- : 0;
+		if (padbuf.buttons & PAD_DOWN) rectangle.y < y_res - rectangle.h ? rectangle.y++ : 0;
+
+		if (padbuf.type == 2 || padbuf.type == 3) {
+			signed char *current_pad_x = NULL;
+			signed char *current_pad_y = NULL;
+
+			if (padbuf.type == 2) {
+				current_pad_x = &padbuf.extra.analogJoy.x[1];
+				current_pad_y = &padbuf.extra.analogJoy.y[1];
+			} else {
+				current_pad_x = &padbuf.extra.analogPad.x[1];
+				current_pad_y = &padbuf.extra.analogPad.y[1];
+			}
+
+			if (rectangle.x >= 0 && rectangle.x <= x_res - rectangle.w)
+				rectangle.x += *current_pad_x / 24;
+
+			if (rectangle.y >= 0 && rectangle.y <= y_res - rectangle.h)
+				rectangle.y += *current_pad_y / 24;
+
+			if (rectangle.x > x_res - rectangle.w)
+				rectangle.x = x_res - rectangle.w;
+
+			if (rectangle.y > y_res - rectangle.h)
+				rectangle.y = y_res - rectangle.h;
+
+			if (rectangle.x < 0)
+				rectangle.x = 0;
+
+			if (rectangle.y < 0)
+				rectangle.y = 0;
+		}
 
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
