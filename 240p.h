@@ -23,6 +23,7 @@ volatile int display_is_old;
 
 unsigned short input;
 
+unsigned char VMODE;
 unsigned short x_res,y_res; //not using GsScreenH because it can be only 240/480
 
 void load_background();
@@ -30,3 +31,4 @@ void draw_background();
 void upload_sprite(GsImage *image, GsSprite *sprite, void *compressed_buffer);//decompress and upload image as sprite to vram
 unsigned short input_tap(); //is returning global variable input 
 void flip_buffer(); //double buffer
+void draw_list();

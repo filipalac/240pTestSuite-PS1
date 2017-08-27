@@ -28,6 +28,8 @@
 #include"240p.h"
 #include"textures.h"
 
+#define YTOP224 (y_res == 224 ? 8 : 0)
+
 void grid_scroll_test()
 {
 	int speed = 1;
@@ -82,9 +84,7 @@ void grid_scroll_test()
 			grid.x -= 160;
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	}
 }
@@ -107,8 +107,8 @@ void backlight_zone()
 		PSX_PollPad(0, &padbuf);
 		if (padbuf.buttons & PAD_LEFT) rectangle.x > 0 ? rectangle.x-- : 0;
 		if (padbuf.buttons & PAD_RIGHT) rectangle.x < x_res - rectangle.w ? rectangle.x++ : 0;
-		if (padbuf.buttons & PAD_UP) rectangle.y > 0 ? rectangle.y-- : 0;
-		if (padbuf.buttons & PAD_DOWN) rectangle.y < y_res - rectangle.h ? rectangle.y++ : 0;
+		if (padbuf.buttons & PAD_UP) rectangle.y > 0 + YTOP224 ? rectangle.y-- : 0;
+		if (padbuf.buttons & PAD_DOWN) rectangle.y < y_res - rectangle.h + YTOP224 ? rectangle.y++ : 0;
 
 		if (padbuf.type == 2 || padbuf.type == 3) {
 			signed char *current_pad_x = NULL;
@@ -125,20 +125,20 @@ void backlight_zone()
 			if (rectangle.x >= 0 && rectangle.x <= x_res - rectangle.w)
 				rectangle.x += *current_pad_x / 24;
 
-			if (rectangle.y >= 0 && rectangle.y <= y_res - rectangle.h)
+			if (rectangle.y >= 0 + YTOP224 && rectangle.y <= y_res - rectangle.h - YTOP224)
 				rectangle.y += *current_pad_y / 24;
 
 			if (rectangle.x > x_res - rectangle.w)
 				rectangle.x = x_res - rectangle.w;
 
-			if (rectangle.y > y_res - rectangle.h)
-				rectangle.y = y_res - rectangle.h;
+			if (rectangle.y > y_res - rectangle.h + YTOP224)
+				rectangle.y = y_res - rectangle.h + YTOP224;
 
 			if (rectangle.x < 0)
 				rectangle.x = 0;
 
-			if (rectangle.y < 0)
-				rectangle.y = 0;
+			if (rectangle.y < 0 + YTOP224)
+				rectangle.y = 0 + YTOP224;
 		}
 
 		switch (input_tap()) {
@@ -159,9 +159,7 @@ void backlight_zone()
 
 		GsSortRectangle(&rectangle);
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	}
 }
@@ -252,9 +250,7 @@ void horizontal_stripes()
 			draw_font(0, 20, y_res - 30, 255, 255, 255, "frame: %d", frame);
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	}
 }
@@ -316,9 +312,7 @@ void checkerboard()
 			draw_font(0, 20, y_res - 30, 255, 255, 255, "frame: %d", frame);
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	}
 }
@@ -340,8 +334,7 @@ void scroll_test()
 	upload_sprite(&image, &kiki, &kiki_array);
 
 	kiki.h = kiki.w = 256;
-	floor.x  = 0; floor.y  = 128;
-	kiki.x  = 32; kiki.y  = 0;
+	kiki.x  = 32;
 
 	while (1) {
 		if (display_is_old) {
@@ -384,6 +377,7 @@ void scroll_test()
 			GsSortSprite(&back[i/30]);
 
 			floor.x = 0;
+			floor.y = y_res == 224 ? 112 : 128;
 			floor.u += 2*speed;
 			GsSortSprite(&floor);
 			floor.x = 256;
@@ -410,9 +404,7 @@ void scroll_test()
 			GsSortSprite(&kiki);
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	}
 }
@@ -451,6 +443,8 @@ void striped_test(char drop_shadow)
 	line.x[0] = 0; line.y[0] = 0;
 	line.x[1] = 320; line.y[1] = 0;
 
+	striped.x = striped.y = 8;
+
 	while (1) {
 		if (display_is_old) {
 		flip_buffer();
@@ -477,8 +471,8 @@ void striped_test(char drop_shadow)
 		PSX_PollPad(0, &padbuf);
 		if (padbuf.buttons & PAD_LEFT) striped.x > 0 ? striped.x-- : 0;
 		if (padbuf.buttons & PAD_RIGHT) striped.x < x_res - striped.w ? striped.x++ : 0;
-		if (padbuf.buttons & PAD_UP) striped.y > 0 ? striped.y-- : 0;
-		if (padbuf.buttons & PAD_DOWN) striped.y < y_res - striped.h ? striped.y++ : 0;
+		if (padbuf.buttons & PAD_UP) striped.y > 0 + YTOP224 ? striped.y-- : 0;
+		if (padbuf.buttons & PAD_DOWN) striped.y < y_res - striped.h + YTOP224 ? striped.y++ : 0;
 
 		if (padbuf.type == 2 || padbuf.type == 3) {
 			if (padbuf.type == 2) {
@@ -492,14 +486,14 @@ void striped_test(char drop_shadow)
 			if (striped.x >= 0 && striped.x <= x_res - striped.w)
 				striped.x += *current_pad_x / 24;
 
-			if (striped.y >= 0 && striped.y <= y_res - striped.h)
-				striped.y += *current_pad_y / 24;
+			if (striped.y >= 0 + YTOP224 && striped.y <= y_res - striped.h + YTOP224)
+				striped.y += *current_pad_y / 24 + YTOP224;
 
 			if (striped.x > x_res - striped.w)
 				striped.x = x_res - striped.w;
 
-			if (striped.y > y_res - striped.h)
-				striped.y = y_res - striped.h;
+			if (striped.y > y_res - striped.h + YTOP224)
+				striped.y = y_res - striped.h + YTOP224;
 
 			if (striped.x < 0)
 				striped.x = 0;
@@ -514,6 +508,9 @@ void striped_test(char drop_shadow)
 				upload_sprite(&image, &motoko, &motoko_array);
 				image_uploaded = 1;
 			}
+			GsSortCls(255, 255, 255);
+
+			motoko.y = y_res == 224 ? - 8 : 0; 
 			motoko.x = 0;
 			motoko.w = 256;
 			motoko.tpage = 5;
@@ -562,7 +559,7 @@ void striped_test(char drop_shadow)
 			GsSortSprite(&back[j/30]);
 
 			floor.x = 0;
-			floor.y = 128;
+			floor.y = y_res == 224 ? 112 : 128;
 			floor.u = 2 * striped.x;
 			GsSortSprite(&floor);
 			floor.x = 256;
@@ -604,9 +601,7 @@ void striped_test(char drop_shadow)
 			}
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	} 
 }
@@ -663,9 +658,7 @@ void sound_test()
 		draw_menu_font(1, cnt, 1, 120, 130, "Center Channel");
 		draw_menu_font(1, cnt, 2, 160, 120, "Right Channel");
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	}
 }
@@ -758,9 +751,7 @@ void passive_lag_test()
 			}
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }
@@ -916,10 +907,10 @@ void lag_test()
 			draw_font(0, 242, 20, 0, 206, 206, "rhytmic");
 
 
-		draw_font(0, 21, 194, 0, 255, 0, "Press X when the sprite is aligned with the background");
-		draw_font(0, 20, 202, 0, 255, 0, "[] button toggles horizontal and vertical movement");
-		draw_font(0, 20, 210, 0, 255, 0, "() button toggles rhytmic timing");
-		draw_font(0, 20, 218, 0, 255, 0, "R1 button toggles audio");
+		draw_font(0, 21, 186, 0, 255, 0, "Press X when the sprite is aligned with the background");
+		draw_font(0, 20, 194, 0, 255, 0, "[] button toggles horizontal and vertical movement");
+		draw_font(0, 20, 202, 0, 255, 0, "() button toggles rhytmic timing");
+		draw_font(0, 20, 210, 0, 255, 0, "R1 button toggles audio");
 
 		if (pos >= 10) { //end page
 			sound = 0;
@@ -930,30 +921,28 @@ void lag_test()
 			for (i = 0; i < 10; i++) {
 				draw_font(1, 60, 102, 0, 206, 206, "+");
 				if (clicks[i] == 0) {
-					draw_font(1, 70, i * 8 + 70, 0, 255, 0, "%d", clicks[i] / 10);
-					draw_font(1, 75, i * 8 + 70, 0, 255, 0, "%d", clicks[i] % 10);
+					draw_font(1, 70, i * 8 + 62, 0, 255, 0, "%d", clicks[i] / 10);
+					draw_font(1, 75, i * 8 + 62, 0, 255, 0, "%d", clicks[i] % 10);
 				} else {
-					draw_font(1, 70, i * 8 + 70, 255, 255, 255, "%d", clicks[i] / 10);
-					draw_font(1, 75, i * 8 + 70, 255, 255, 255, "%d", clicks[i] % 10);
+					draw_font(1, 70, i * 8 + 62, 255, 255, 255, "%d", clicks[i] / 10);
+					draw_font(1, 75, i * 8 + 62, 255, 255, 255, "%d", clicks[i] % 10);
 				}
 
-				draw_font(1, 55, 150, 0, 206, 206, "_____");
+				draw_font(1, 55, 142, 0, 206, 206, "_____");
 				res = (double)total / 10.0;
 				if (GsScreenM == VMODE_NTSC)
 					ms = (double)(res * (1000.0/60.0));
 				else 
 					ms = (double)(res * (1000.0/50.0));
-				draw_font(1, 70, 158, 255, 255, 255, "%d/10 = %0.2f frames \n%0.2f miliseconds", total, res , ms);
+				draw_font(1, 70, 150, 255, 255, 255, "%d/10 = %0.2f frames \n%0.2f miliseconds", total, res , ms);
 				if (GsScreenM == VMODE_NTSC)
-					draw_font(1, 45, 174, 0, 255, 0, "Keep in mind that frame is around 16.67 ms.");
+					draw_font(1, 45, 166, 0, 255, 0, "Keep in mind that frame is around 16.67 ms.");
 				else 
-					draw_font(1, 45, 174, 0, 255, 0, "Keep in mind that frame is around 20 ms.");
+					draw_font(1, 45, 166, 0, 255, 0, "Keep in mind that frame is around 20 ms.");
 			}
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }
@@ -986,8 +975,10 @@ void audio_sync_test()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
 		GsSortCls(0, 0, 0);
+		GsSetDispEnvSimple(0, 0);
+		GsSetDrawEnvSimple(0, 0, 320, 256);
+		GsSetVideoModeEx(320, 240, VMODE, 0, 0, 0);
 
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
@@ -1045,9 +1036,7 @@ void audio_sync_test()
 		GsSortRectangle(&ground);
 		GsSortRectangle(&dot);
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}     
 	}
 }

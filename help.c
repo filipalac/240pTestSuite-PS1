@@ -61,20 +61,20 @@ void draw_help(int option)
 
 		switch (option) {
 		case HELP_CREDITS:
-			draw_font(1, 235, 42, 255, 255, 255, "20.08.2017");
+			draw_font(1, 235, 34, 255, 255, 255, "27.08.2017");
 
-			draw_font(1, 40, 55, 0, 255, 0, "Code, Convergence and Focus Pattern");
-			draw_font(1, 40, 65, 255, 255, 255, "Filip Alac");
-			draw_font(1, 40, 75, 0, 255, 0, "Patterns, Concept and original creator of Suite");
-			draw_font(1, 40, 85, 255, 255, 255, "Artemio Urbina");
-			draw_font(1, 40, 95, 0, 255, 0, "Advisor");
-			draw_font(1, 40, 105, 255, 255, 255, "Fudoh");
-			draw_font(1, 40, 115, 0, 255, 0, "Menu Pixel Art");
-			draw_font(1, 40, 125, 255, 255, 255, "Asher");
-			draw_font(1, 40, 135, 0, 255, 0, "SDK");
-			draw_font(1, 40, 145, 255, 255, 255, "PSXSDK by Nextvolume");
-			draw_font(1, 39, 155, 0, 255, 0, "Info on using this suite");
-			draw_font(1, 40, 165, 255, 255, 255, "http:/junkerhq.net/xrgb");
+			draw_font(1, 40, 45, 0, 255, 0, "Code, Convergence and Focus Pattern");
+			draw_font(1, 40, 55, 255, 255, 255, "Filip Alac");
+			draw_font(1, 40, 65, 0, 255, 0, "Patterns, Concept and original creator of Suite");
+			draw_font(1, 40, 75, 255, 255, 255, "Artemio Urbina");
+			draw_font(1, 40, 85, 0, 255, 0, "Advisor");
+			draw_font(1, 40, 95, 255, 255, 255, "Fudoh");
+			draw_font(1, 40, 105, 0, 255, 0, "Menu Pixel Art");
+			draw_font(1, 40, 115, 255, 255, 255, "Asher");
+			draw_font(1, 40, 125, 0, 255, 0, "SDK");
+			draw_font(1, 40, 135, 255, 255, 255, "PSXSDK by Nextvolume");
+			draw_font(1, 39, 145, 0, 255, 0, "Info on using this suite");
+			draw_font(1, 40, 155, 255, 255, 255, "http:/junkerhq.net/xrgb");
 			break;
 		case HELP_GENERAL:
 			switch (page) {
@@ -99,9 +99,7 @@ void draw_help(int option)
 			break;
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }

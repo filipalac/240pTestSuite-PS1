@@ -21,11 +21,14 @@ all:
 	bmp2tim textures/color.bmp patterns/color.tim 8 -org=320,0 -clut=768,485
 	bmp2tim textures/colorgrid.bmp patterns/colorgrid.tim 8 -org=640,0 -clut=768,486
 	bmp2tim textures/pluge.bmp patterns/pluge.tim 4 -org=320,0 -clut=912,480 
-	bmp2tim textures/linearity.bmp patterns/linearity.tim 4 -org=320,0 -clut=912,480 
+	bmp2tim textures/linearity.bmp patterns/linearity.tim 4 -org=320,0 -noblack -clut=912,480 
+	bmp2tim textures/linearity224.bmp patterns/linearity224.tim 4 -org=448,0 -noblack -clut=912,481
+	bmp2tim textures/linearity240pal.bmp patterns/linearity240pal.tim 4 -org=576,0 -noblack -clut=912,483
 	bmp2tim textures/linearitygriddot.bmp patterns/linearitygriddot.tim 4 -org=960,0 -noblack -clut=912,482
 	bmp2tim textures/grayramp.bmp patterns/grayramp.tim 8 -org=320,0 -clut=768,480
 	bmp2tim textures/sharpness.bmp patterns/sharpness.tim 4 -org=320,0 -clut=912,480
-	bmp2tim textures/lingrid.bmp patterns/lingrid.tim 4 -org=640,0 -noblack -clut=912,487
+	bmp2tim textures/sharpness224.bmp patterns/sharpness224.tim 4 -org=448,0 -clut=912,481
+	bmp2tim textures/lingrid.bmp patterns/lingrid.tim 4 -org=704,0 -noblack -clut=912,487
 	bmp2tim textures/checkerboard.bmp patterns/checkerboard.tim 4 -org=320,0  -clut=912,480
 	bmp2tim textures/sonicback.bmp patterns/sonicback.tim 4 -org=640,256  -clut=912,489
 	bmp2tim textures/circle.bmp patterns/circle.tim 4 -org=320,0  -noblack -clut=912,480
@@ -63,9 +66,12 @@ all:
 	./tools/lz4compress ./patterns/colorgrid.tim ./patterns/colorgrid.lz4
 	./tools/lz4compress ./patterns/pluge.tim ./patterns/pluge.lz4
 	./tools/lz4compress ./patterns/linearity.tim ./patterns/linearity.lz4
+	./tools/lz4compress ./patterns/linearity224.tim ./patterns/linearity224.lz4
+	./tools/lz4compress ./patterns/linearity240pal.tim ./patterns/linearity240pal.lz4
 	./tools/lz4compress ./patterns/linearitygriddot.tim ./patterns/linearitygriddot.lz4
 	./tools/lz4compress ./patterns/grayramp.tim ./patterns/grayramp.lz4
 	./tools/lz4compress ./patterns/sharpness.tim ./patterns/sharpness.lz4
+	./tools/lz4compress ./patterns/sharpness224.tim ./patterns/sharpness224.lz4
 	./tools/lz4compress ./patterns/lingrid.tim ./patterns/lingrid.lz4
 	./tools/lz4compress ./patterns/checkerboard.tim ./patterns/checkerboard.lz4
 	./tools/lz4compress ./patterns/sonicback.tim ./patterns/sonicback.lz4
@@ -102,9 +108,12 @@ all:
 	bin2c colorgrid < patterns/colorgrid.lz4 > ./patterns/colorgrid.c
 	bin2c pluge < patterns/pluge.lz4 > ./patterns/pluge.c
 	bin2c linearity < patterns/linearity.lz4 > ./patterns/linearity.c
+	bin2c linearity224 < patterns/linearity224.lz4 > ./patterns/linearity224.c
+	bin2c linearity240pal < patterns/linearity240pal.lz4 > ./patterns/linearity240pal.c
 	bin2c linearitygriddot < patterns/linearitygriddot.lz4 > ./patterns/linearitygriddot.c
 	bin2c grayramp < patterns/grayramp.lz4 > ./patterns/grayramp.c
 	bin2c sharpness < patterns/sharpness.lz4 > ./patterns/sharpness.c
+	bin2c sharpness224 < patterns/sharpness224.lz4 > ./patterns/sharpness224.c
 	bin2c lingrid < patterns/lingrid.lz4 > ./patterns/lingrid.c
 	bin2c checkerboard < patterns/checkerboard.lz4 > ./patterns/checkerboard.c
 	bin2c sonicback < patterns/sonicback.lz4 > ./patterns/sonicback.c

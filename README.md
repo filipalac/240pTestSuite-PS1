@@ -20,12 +20,11 @@ This is free software, with full source code available under the GPL.
 [240p test suite]: http://junkerhq.net/xrgb/index.php/240p_test_suite
 
 
-##### As of 20.8.2017 the PS1 version of 240p Test Suite lack of:
+##### As of 27.8.2017 the PS1 version of 240p Test Suite lack of:
 * Help texts
 * Alternating 240p/480i test
 * 100 IRE test pattern
 * Interlaced video modes
-* Only 240/256 resolution (except grid)
 
 Contributors
 ------------

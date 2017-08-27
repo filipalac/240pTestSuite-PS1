@@ -24,6 +24,8 @@
 #include"font.h"
 #include"textures.h"
 
+#define YTOP224 (y_res == 224 ? 8 : 0)
+
 void pluge()
 {
 	GsImage image;
@@ -50,9 +52,7 @@ void pluge()
 		sprite.tpage = 6;
 		GsSortSprite(&sprite);
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }
@@ -101,16 +101,14 @@ void color_bars()
 			GsSortSprite(&colorgrid);
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }
 
 void smpte_color_bars()
 {
-	int frametime = 90;
+	int frame_time = 90;
 	char limited = 0;
 
 	GsImage image;
@@ -133,12 +131,13 @@ void smpte_color_bars()
 		case PAD_TRIANGLE:
 			return;
 		case PAD_CROSS:
-			frametime = 90;
+			frame_time = 90;
 			limited = !limited;
 			break;
 		}
 
 		if (!limited) {
+			sprite100.y = 0;
 			sprite100.tpage = 5;
 			sprite100.x = 0;
 			sprite100.w = 256;
@@ -148,6 +147,7 @@ void smpte_color_bars()
 			sprite100.w = 64;
 			GsSortSprite(&sprite100);
 		} else {
+			sprite75.y = 0;
 			sprite75.tpage = 10;
 			sprite75.x = 0;
 			sprite75.w = 256;
@@ -158,14 +158,12 @@ void smpte_color_bars()
 			GsSortSprite(&sprite75);
 		}
 
-		if (frametime > 0) {
+		if (frame_time > 0) {
 			draw_font(1, 260, 20, 255, 255, 255, "%s %%", limited ? "75" : "100");
-			frametime--;
+			frame_time--;
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	} 
 }
@@ -194,9 +192,7 @@ void color_bars_with_gray_reference()
 		sprite.tpage = 6;
 		GsSortSprite(&sprite);
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	} 
 }
@@ -245,9 +241,7 @@ void color_bleed_check()
 			GsSortSprite(&spritechk);
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	} 
 }
@@ -255,8 +249,8 @@ void color_bleed_check()
 void grid()
 {
 	char whitebackground = 0;
-	char gridsel = 1;
-	int frametime = 90;
+	char gridsel = 0;
+	int frame_time = 90;
 
 	GsImage image;
 	GsSprite sprite224, sprite240, sprite256;
@@ -282,11 +276,9 @@ void grid()
 			return;
 		case PAD_CROSS:
 			gridsel++;
-			if (GsScreenM == VMODE_PAL && gridsel > 2)
+			if (gridsel > (y_res % 224 / 16))
 				gridsel = 0;
-			if (GsScreenM == VMODE_NTSC && gridsel > 1)
-				gridsel = 0;
-			frametime = 90;
+			frame_time = 90;
 			break;
 		case PAD_SQUARE:
 			whitebackground = !whitebackground;
@@ -308,9 +300,9 @@ void grid()
 			sprite224.x = 256;
 			sprite224.tpage = 6;
 			GsSortSprite(&sprite224);
-			if (frametime > 0) {
+			if (frame_time > 0) {
 				draw_font(1, 230, 20, 0, 255, 0, "320x224");
-		       		frametime--;
+		       		frame_time--;
 			}
 			break;
 		case 1:
@@ -324,9 +316,9 @@ void grid()
 			sprite240.x = 256;
 			sprite240.tpage = 8;
 			GsSortSprite(&sprite240);
-			if (frametime > 0) {
+			if (frame_time > 0) {
 				draw_font(1, 230, 20, 0, 255, 0, "320x240");
-				frametime--;
+				frame_time--;
 			}
 			break;
 		case 2:
@@ -340,16 +332,14 @@ void grid()
 			sprite256.x = 256;
 			sprite256.tpage = 10;
 			GsSortSprite(&sprite256);
-			if (frametime > 0) {
+			if (frame_time > 0) {
 				draw_font(1, 230, 20, 0, 255, 0, "320x256");
-				frametime--;
+				frame_time--;
 			}
 			break;
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }
@@ -358,12 +348,19 @@ void linearity()
 {
 	char show_grid = 0;
 	char show_griddot = 0;
+	char linsel = (GsScreenM == VMODE_PAL && y_res >= 240) ? 2 : 0;
 	int x, y;
+	int frame_time = 90;
 
 	GsImage image;
-	GsSprite sprite, grid, griddot;
+	GsSprite sprite, sprite224, sprite240pal, grid, griddot;
 
-	upload_sprite(&image, &sprite, &linearity_array);
+	upload_sprite(&image, &sprite224, &linearity224_array);
+	if (y_res >= 240) {
+		upload_sprite(&image, &sprite, &linearity_array);
+		upload_sprite(&image, &sprite240pal, &linearity240pal_array);
+	}
+
 	upload_sprite(&image, &grid, &lingrid_array);
 	upload_sprite(&image, &griddot, &linearitygriddot_array);
 
@@ -379,41 +376,84 @@ void linearity()
 			show_grid = !show_grid;
 			show_griddot = 0;
 			break;
-		case PAD_CROSS:
+		case PAD_SQUARE:
 			show_griddot = !show_griddot;
 			show_grid = 0;
 			break;
+		case PAD_CROSS:
+			frame_time = 90;
+			linsel++;
+			if (linsel > (y_res / 225 * 2))
+				linsel = 0;
+			break;
 		}
 
-		sprite.w = 256;
-		sprite.x = 0;
-		sprite.tpage = 5;
-		GsSortSprite(&sprite);
-		sprite.w = 64;
-		sprite.x = 256;
-		sprite.tpage = 6;
-		GsSortSprite(&sprite);
-
 		if (show_grid) {
+			grid.y = linsel == 0  ? 8 : 0;
+			grid.h =  linsel == 0  ? 224 : 240;
 			grid.x = 0;
 			GsSortSprite(&grid);
 			grid.x = 160;
 			GsSortSprite(&grid);
 		}
 		if (show_griddot) {
-			for (y = 0; y != 33; y++) {
+			for (y = 0; y != (linsel == 0 ? 28 : 30); y++) {
 				for (x = 0; x != 40; x++) {
 					griddot.x = x * 8;
 					GsSortSprite(&griddot);
 				}
-				griddot.y = y * 8;
+				griddot.y = y * 8 + (!linsel  ? 8 : 0);
 				GsSortSprite(&griddot);
 			}
 		}
+		
+		switch (linsel) {
+		case 0:
+			sprite224.w = 256;
+			sprite224.x = 0;
+			sprite224.y = 8;
+			sprite224.tpage = 7;
+			GsSortSprite(&sprite224);
+			sprite224.w = 64;
+			sprite224.x = 256;
+			sprite224.tpage = 8;
+			GsSortSprite(&sprite224);
+			if (frame_time > 0) {
+				draw_font(1, 230, 20, 0, 255, 0, "320x224 NTSC");
+		       		frame_time--;
+			}
+			break;
+		case 1:
+			sprite.w = 256;
+			sprite.x = 0;
+			sprite.tpage = 5;
+			GsSortSprite(&sprite);
+			sprite.w = 64;
+			sprite.x = 256;
+			sprite.tpage = 6;
+			GsSortSprite(&sprite);
+			if (frame_time > 0) {
+				draw_font(1, 230, 20, 0, 255, 0, "320x240 NTSC");
+		       		frame_time--;
+			}
+			break;
+		case 2:
+			sprite240pal.w = 256;
+			sprite240pal.x = 0;
+			sprite240pal.tpage = 9;
+			GsSortSprite(&sprite240pal);
+			sprite240pal.w = 64;
+			sprite240pal.x = 256;
+			sprite240pal.tpage = 10;
+			GsSortSprite(&sprite240pal);
+			if (frame_time > 0) {
+				draw_font(1, 230, 20, 0, 255, 0, "320x240 PAL");
+		       		frame_time--;
+			}
+			break;
+		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}  
 } 
@@ -442,9 +482,7 @@ void gray_ramp()
 		sprite.tpage = 7;
 		GsSortSprite(&sprite);
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }
@@ -464,7 +502,7 @@ void white_and_rgb_screens()
 
 	GsRectangle box;
 	box.r = box.g = box.b = 1;
-	box.x = 150; box.y = 5;
+	box.x = 150; box.y = 13;
 	box.w = 130; box.h = 8;
 	box.attribute = ENABLE_TRANS | TRANS_MODE(0);
 
@@ -514,9 +552,9 @@ void white_and_rgb_screens()
 			break;
 		case 8:
 			GsSortRectangle(&box);
-			draw_menu_font(0, rgb_cnt, 1, 160, 5, "R:%d", r >> 3);
-			draw_menu_font(0, rgb_cnt, 2, 205, 5, "G:%d", g >> 3);
-			draw_menu_font(0, rgb_cnt, 3, 250, 5, "B:%d", b >> 3);
+			draw_menu_font(0, rgb_cnt, 1, 160, 13, "R:%d", r >> 3);
+			draw_menu_font(0, rgb_cnt, 2, 205, 13, "G:%d", g >> 3);
+			draw_menu_font(0, rgb_cnt, 3, 250, 13, "B:%d", b >> 3);
 
 			if (input & PAD_RIGHT && rgb_cnt != 3)
 				rgb_cnt++;
@@ -564,9 +602,7 @@ void white_and_rgb_screens()
 			}
 		}
 				
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 
@@ -574,31 +610,59 @@ void white_and_rgb_screens()
 
 void sharpness()
 {
-	GsImage image;
-	GsSprite sprite;
+	int frame_time = 90;
+	char sharpsel = y_res >= 240 ? 0 : 1;
 
-	upload_sprite(&image, &sprite, &sharpness_array);
+	GsImage image;
+	GsSprite sprite, sprite224;
+
+	upload_sprite(&image, &sprite224, &sharpness224_array);
+	if (y_res >= 240)
+		upload_sprite(&image, &sprite, &sharpness_array);
 
 	while (1) {
 		if (display_is_old) {
 		flip_buffer();
 		GsSortCls(0, 0, 0);
 
-		if (input_tap() & PAD_TRIANGLE)
+		switch (input_tap()) {
+		case PAD_TRIANGLE:
 			return;
+		case PAD_CROSS:
+			if (y_res >= 240) {
+				sharpsel = !sharpsel;
+				frame_time = 90;
+			}
+			break;
+		}
 
-		sprite.w = 256;
-		sprite.x = 0;
-		sprite.tpage = 5;
-		GsSortSprite(&sprite);
-		sprite.w = 64;
-		sprite.x = 256;
-		sprite.tpage = 6;
-		GsSortSprite(&sprite);
+		if (!sharpsel) {
+			sprite.w = 256;
+			sprite.x = 0;
+			sprite.tpage = 5;
+			GsSortSprite(&sprite);
+			sprite.w = 64;
+			sprite.x = 256;
+			sprite.tpage = 6;
+			GsSortSprite(&sprite);
+		} else {
+			sprite224.y = 8;
+			sprite224.w = 256;
+			sprite224.x = 0;
+			sprite224.tpage = 7;
+			GsSortSprite(&sprite224);
+			sprite224.w = 64;
+			sprite224.x = 256;
+			sprite224.tpage = 8;
+			GsSortSprite(&sprite224);
+		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		if (frame_time > 0) {
+			draw_font(1, 230, 20, 0, 255, 0, "320x%s", sharpsel ? "224" : "240");
+		       	frame_time--;
+		}
+
+		draw_list();
 		}
 	}
 }
@@ -653,9 +717,7 @@ void convergence()
 		sprite.tpage = 6;
 		GsSortSprite(&sprite);
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }
@@ -666,7 +728,8 @@ void overscan()
 
 	GsRectangle box;
 	box.r = box.g = box.b = 140;
-	box.x = 0; box.y = 0;
+	box.x = 0;
+	box.y = y_res == 224 ? 8 : 0;
 	box.w = x_res; box.h = y_res;
 	box.attribute = 0;
 
@@ -677,8 +740,8 @@ void overscan()
 
 		GsSortRectangle(&box);
 
-		draw_menu_font(1, cnt, 1, 120, 114, "Top: %d pixels", box.y);
-		draw_menu_font(1, cnt, 2, 120, 122, "Bottom: %d pixels", (y_res - box.h - box.y));
+		draw_menu_font(1, cnt, 1, 120, 114, "Top: %d pixels", box.y - YTOP224);
+		draw_menu_font(1, cnt, 2, 120, 122, "Bottom: %d pixels", (y_res - box.h - box.y) + YTOP224);
 		draw_menu_font(1, cnt, 3, 120, 130, "Left: %d pixels", box.x);
 		draw_menu_font(1, cnt, 4, 120, 138, "Right: %d pixels", (x_res - box.w - box.x));
 
@@ -687,7 +750,8 @@ void overscan()
 			return;
 			break;
 		case PAD_CROSS:
-			box.x = box.y = 0;
+			box.x = 0;
+			box.y = y_res == 224 ? 8 : 0;
 			box.w = x_res;
 			box.h = y_res;
 			break;
@@ -716,11 +780,11 @@ void overscan()
 			}
 			break;
 		case PAD_LEFT:
-			if (cnt == 1 && box.y != 0) {
+			if (cnt == 1 && box.y - YTOP224 != 0) {
 				box.y--;
 				box.h++;
 			}
-			else if (cnt == 2 && (y_res - box.h - box.y) != 0) {
+			else if (cnt == 2 && (y_res - box.h - box.y + YTOP224) != 0) {
 				box.h++;
 			}
 			else if (cnt == 3 && box.x != 0) {
@@ -733,9 +797,7 @@ void overscan()
 			break;
 		}
 
-		GsDrawList();
-		while (GsIsDrawing());
-		display_is_old = 0;
+		draw_list();
 		}
 	}
 }  
