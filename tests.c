@@ -24,8 +24,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#include"font.h"
 #include"240p.h"
+#include"help.h"
+#include"font.h"
 #include"textures.h"
 
 #define YTOP224 (y_res == 224 ? 8 : 0)
@@ -48,6 +49,8 @@ void grid_scroll_test()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_VSCROLL);
 			break;
 		case PAD_CROSS:
 			vertical = !vertical;
@@ -144,6 +147,9 @@ void backlight_zone()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_BACKLIT);
+			break;
 		case PAD_CROSS:
 			if (rectangle.w < 25)
 				rectangle.w = rectangle.h *= 2;
@@ -192,6 +198,8 @@ void horizontal_stripes()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_STRIPES);
 			break;
 		case PAD_CROSS:
 			alternating = !alternating;
@@ -202,7 +210,7 @@ void horizontal_stripes()
 		case PAD_SQUARE:
 			framecounter = !framecounter;
 			break;
-		case PAD_R1:
+		case PAD_UP:
 			vertical = !vertical;
 			break;
 		}
@@ -281,6 +289,8 @@ void checkerboard()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_CHECK);
 			break;
 		case PAD_CROSS:
 			alternating = !alternating;
@@ -344,6 +354,8 @@ void scroll_test()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_HSCROLL);
 			break;
 		case PAD_CROSS:
 			vertical = !vertical;
@@ -453,6 +465,12 @@ void striped_test(char drop_shadow)
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			if (drop_shadow)
+				draw_help(HELP_SHADOW);
+			else 
+				draw_help(HELP_STRIPED);
+			break;
 		case PAD_CROSS:
 			image_uploaded = 0;
 			if (background != 3)
@@ -621,6 +639,9 @@ void sound_test()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_SOUND);
+			break;
 		case PAD_LEFT:
 			if (cnt >= 0)
 				cnt--;
@@ -686,6 +707,9 @@ void passive_lag_test()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_LAG);
+			break;
 		case PAD_CROSS:
 			pause = !pause;
 			break;
@@ -787,6 +811,9 @@ void lag_test()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_MANUALLAG);
+			break;
 		case PAD_CROSS:
 			clicks[pos] = change * offset;
 			if (pos <= 9 && clicks[pos] >= 0) {
@@ -983,6 +1010,8 @@ void audio_sync_test()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_AUDIOSYNC);
 			break;
 		case PAD_CROSS:
 			if (pause) {

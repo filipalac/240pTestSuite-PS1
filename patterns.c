@@ -21,6 +21,7 @@
 #include<psxgpu.h>
 
 #include"240p.h"
+#include"help.h"
 #include"font.h"
 #include"textures.h"
 
@@ -41,6 +42,9 @@ void pluge()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_PLUGE);
+			break;
 		}
 
 		sprite.w = 256;
@@ -76,6 +80,9 @@ void color_bars()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_COLORS);
+			break;
 		case PAD_CROSS:
 			grid = !grid;
 			break;
@@ -130,6 +137,9 @@ void smpte_color_bars()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_SMPTE);
+			break;
 		case PAD_CROSS:
 			frame_time = 90;
 			limited = !limited;
@@ -180,8 +190,13 @@ void color_bars_with_gray_reference()
 		flip_buffer();
 		GsSortCls(0, 0, 0);
 
-		if (input_tap() & PAD_TRIANGLE)
+		switch (input_tap()) {
+		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_601CB);
+			break;
+		}
 
 		sprite.w = 256;
 		sprite.x = 0;
@@ -215,6 +230,9 @@ void color_bleed_check()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+			break;
+		case PAD_START:
+			draw_help(HELP_BLEED);
 			break;
 		case PAD_CROSS:
 			chk = !chk;
@@ -274,6 +292,9 @@ void grid()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_GRID);
+			break;
 		case PAD_CROSS:
 			gridsel++;
 			if (gridsel > (y_res % 224 / 16))
@@ -372,6 +393,9 @@ void linearity()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_LINEARITY);
+			break;
 		case PAD_CIRCLE:
 			show_grid = !show_grid;
 			show_griddot = 0;
@@ -470,8 +494,13 @@ void gray_ramp()
 		flip_buffer();
 		GsSortCls(0, 0, 0);
 
-		if (input_tap() & PAD_TRIANGLE)
+		switch (input_tap()) {
+		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_GRAY);
+			break;
+		}
 
 		sprite.w = 256;
 		sprite.x = 0;
@@ -514,6 +543,9 @@ void white_and_rgb_screens()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_WHITE);
+			break;
 		case PAD_CROSS:
 			if (cnt == 9)
 				cnt = 1;
@@ -628,6 +660,9 @@ void sharpness()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_SHARPNESS);
+			break;
 		case PAD_CROSS:
 			if (y_res >= 240) {
 				sharpsel = !sharpsel;
@@ -683,13 +718,13 @@ void convergence()
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
-			case PAD_TRIANGLE:
-				return;
-			case PAD_CROSS:
-				cnt++;
-				if (cnt == 7)
-					cnt = 0;
-				break;
+		case PAD_TRIANGLE:
+			return;
+		case PAD_CROSS:
+			cnt++;
+			if (cnt == 7)
+				cnt = 0;
+			break;
 		}
 		switch (cnt) {
 		case 0: sprite.r = 128; sprite.g = 128; sprite.b = 128;
@@ -748,6 +783,8 @@ void overscan()
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_OVERSCAN);
 			break;
 		case PAD_CROSS:
 			box.x = 0;

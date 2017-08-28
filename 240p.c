@@ -191,7 +191,7 @@ int main()
 	char patterns = 0;
 	char cnt = 1;
 
-	//pad_enable_vibration(0);	
+	pad_enable_vibration(0);	
 	unsigned char led_on[] = {1,0x44,0,1,0x2, 0, 0, 0, 0}; //led on
 	pad_escape_mode(0, 1); // Enter escape / configuration mode
 	QueryPAD(0, led_on, NULL, sizeof(led_on));
@@ -209,9 +209,9 @@ int main()
 		switch (input_tap()) {
 		case PAD_DOWN:
 			if (!patterns) {
-				if (cnt <= 14)
+				if (cnt <= 15)
 					cnt++;
-				if (cnt > 14)
+				if (cnt > 15)
 					cnt = 1;
 			}
 			else if (patterns) {
@@ -226,7 +226,7 @@ int main()
 				if (cnt >= 0)
 					cnt--;
 				if (cnt < 1)
-					cnt = 14;
+					cnt = 15;
 			}
 			if (patterns) {
 				cnt--;
@@ -235,9 +235,9 @@ int main()
 			}
 			break;
 		case PAD_TRIANGLE:
-			cnt = 1;
+			if (patterns)
+				cnt = 1;
 			patterns = 0;
-			cnt = 1;
 			break;
 		case PAD_CROSS:
 			if (!patterns) {
@@ -263,10 +263,12 @@ int main()
 				case 10: backlight_zone();
 					break;
 				case 11: sound_test();
-					 break;
+					break;
 				case 12: audio_sync_test();
-					 break;
-				case 13: 
+					break;
+				case 13: draw_help(HELP_GENERAL);
+				       break;
+				case 14: 
 					if (y_res < 240 + VMODE * 16)
 						y_res += 16;
 					else {
@@ -275,7 +277,7 @@ int main()
 					}
 
 					break;
-				case 14: draw_help(HELP_CREDITS);
+				case 15: draw_help(HELP_CREDITS);
 					 break;
 				}
 			}
@@ -323,8 +325,9 @@ int main()
 			draw_menu_font(1, cnt, 10, 40, 120, "Backlit Zone Test"); 
 			draw_menu_font(1, cnt, 11, 40, 128, "Sound Test"); 
 			draw_menu_font(1, cnt, 12, 40, 136, "Audio Sync Test"); 
-			draw_menu_font(1, cnt, 13, 40, 144, "Video: %s %dp", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res);
-			draw_menu_font(1, cnt, 14, 40, 182, "Credits"); 
+			draw_menu_font(1, cnt, 13, 40, 144, "Help"); 
+			draw_menu_font(1, cnt, 14, 40, 152, "Video: %s %dp", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res);
+			draw_menu_font(1, cnt, 15, 40, 182, "Credits"); 
 		}
 		if (patterns) {
 			draw_menu_font(1, cnt, 1, 40, 47, "Pluge");
