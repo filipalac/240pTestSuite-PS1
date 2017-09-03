@@ -23,6 +23,5 @@ void load_custom_font();
 void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g, unsigned char b, char *fmt, va_list ap);
 void draw_menu_font(char shadow, int count, int order, short x, short y, char *menu_name, ...);
 void draw_font(char shadow, short x, short y, unsigned char r, unsigned char g, unsigned char b, char *fmt, ...);
-void draw_char(char shadow, short x, short y, unsigned char r, unsigned char g, unsigned char b, char fmt);
 void load_numbers();
 void draw_number(short x, short y, unsigned char r, unsigned char g, unsigned char b, char fmt);

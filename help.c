@@ -2,18 +2,18 @@
  * 240p test suite
  * Copyright 2017 Filip Aláč(PS1)
  *
- * This program is free software;
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation;
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program;
+ * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
@@ -97,7 +97,7 @@ void draw_help(int option)
 
 		switch (option) {
 		case HELP_CREDITS:
-			draw_font(1, 235, 34, 255, 255, 255, "28.08.2017");
+			draw_font(1, 235, 34, 255, 255, 255, "3.09.2017");
 
 			draw_font(1, 40, 45, 0, 255, 0, "Code, Convergence and Focus Pattern");
 			draw_font(1, 40, 55, 255, 255, 255, "Filip Alac");
@@ -588,7 +588,7 @@ void draw_help(int option)
 			draw_font(1, 40, y += 8, 255, 255, 255, "some games. This test allows to");
 			draw_font(1, 40, y += 8, 255, 255, 255, "time that delay manually.");
 			y += 8;
-			draw_font(1, 40, y += 8, 255, 255, 255, "Press A to switch the");
+			draw_font(1, 40, y += 8, 255, 255, 255, "Press 'X' to switch the");
 			draw_font(1, 40, y += 8, 255, 255, 255, "resolution");
 			draw_font(1, 40, y += 8, 255, 255, 255, "you are able to see the screen");
 			draw_font(1, 40, y += 8, 255, 255, 255, "back in your display.");

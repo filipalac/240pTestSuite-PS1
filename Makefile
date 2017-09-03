@@ -137,7 +137,7 @@ all:
 	bin2c gillian < patterns/gillian.lz4> ./patterns/gillian.c
 	bin2c convergence < patterns/convergence.lz4> ./patterns/convergence.c
 	#############################
-	psx-gcc  -Wall -O3 -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c
+	psx-gcc  -Wall -O3 -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
 	elf2exe 240p.elf 240p.exe
 	cp 240p.exe cd_root
 	systemcnf 240p.exe > cd_root/system.cnf

@@ -22,6 +22,7 @@
 #include<stdlib.h>
 
 #include"240p.h"
+#include"sg_string.h"
 #include"textures.h"
 
 #include"lz4.h"
@@ -54,7 +55,7 @@ void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g,
 	spr.tpage = 31;
 	spr.w = 6; spr.h = 8;
 
-	vsprintf(stringbuf, fmt, ap); //slow
+	sg_vsprintf(stringbuf, fmt, ap); //standard vsnprintf is slow
 	string = stringbuf;
 
 	while (*string) {
@@ -81,7 +82,7 @@ void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g,
 			spr.x = 0;
 		else if (*string == '\n') {
 			spr.x = x;
-			spr.y += 8;
+			spr.y += spr.h;
 		}
 		else if (*string == '\t')
 			spr.x += spr.w * 8;
@@ -112,38 +113,6 @@ void draw_font(char shadow, short x, short y, unsigned char r, unsigned char g, 
 	va_end(ap);
 }
 
-void draw_char(char shadow, short x, short y, unsigned char r, unsigned char g, unsigned char b, char fmt)
-{
-	GsSprite spr;
-	
-	spr.x = x; spr.y = y;
-	spr.r = r; spr.g = g; spr.b = b;
-	spr.attribute = COLORMODE(COLORMODE_4BPP);
-	spr.mx = spr.my = spr.rotate = spr.scalex = spr.scaley = 0;
-	spr.cx = 960; spr.cy = 321;
-	spr.tpage = 31;
-	spr.w = 6; spr.h = 8;
-
-	if (fmt >= 32 && fmt <= 127) { //check if printable
-		spr.u = ((fmt - 32) - ((fmt - 32) / 16) * 16) * 6;
-		spr.v = (fmt - 32) / 16 * 8;
-
-		if (shadow) {
-			spr.x++;
-			spr.y++;
-			spr.r = spr.g = spr.b = 0;
-			GsSortSprite(&spr);
-			spr.x--;
-			spr.y--;
-			spr.r = r; spr.g = g; spr.b = b;
-		}
-
-		GsSortSprite(&spr);
-
-		spr.x += 5;
-	}
-}
-
 void load_numbers()
 {
 	char data_buffer[8256];
@@ -158,7 +127,7 @@ void load_numbers()
 	GsUploadImage(&image);
 }
 
-void draw_number(short x, short y, unsigned char r, unsigned char g, unsigned char b, char fmt) //i'm not using ... because vsnprintf is slow(huge fps drop)
+void draw_number(short x, short y, unsigned char r, unsigned char g, unsigned char b, char fmt)
 {
 	GsSprite spr;
 	

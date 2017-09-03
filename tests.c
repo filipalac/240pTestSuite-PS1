@@ -742,7 +742,7 @@ void passive_lag_test()
 		draw_font(0, 248, 8, 0, 0, 0, "frames");
 
 		//Draw counter separators
-		draw_number(80, 16, 0, 0, 0, 10);  //10 == :, i'm not using ... because it is slow
+		draw_number(80, 16, 0, 0, 0, 10);  //10 == :
 		draw_number(152, 16, 0, 0, 0, 10);
 		draw_number(224, 16, 0, 0, 0, 10);
 
@@ -890,49 +890,19 @@ void lag_test()
 
 		for (i = 0; i <= pos && pos != 10; i++) { //draw top left table with offsets
 			if (clicks[i] != 99) {
-				draw_char(0, 8, i * 8 + 12, 0, 255, 255, i + 48); //vsprintf is slow
-				draw_font(0, 14, i * 8 + 12, 0, 255, 255, ":");
+				draw_font(0, 8, i * 8 + 12, 0, 255, 255,"%d:", i);
 
-				if ((clicks[i]) >= 0) {
-					char temp = (clicks[i] % 10) + 48;
-
-					if (clicks[i] == 0)
-						draw_char(0, 28, i * 8 + 12, 0, 255, 0, temp);
-					else
-						draw_char(0, 28, i * 8 + 12, 255, 255, 255, temp);
-
-					if (clicks[i] > 9) {
-						temp = (clicks[i] / 10) + 48;
-						draw_char(0, 22, i * 8 + 12, 255, 255, 255, temp);
-					}
-				} else {
-					draw_char(0, 22, i * 8 + 12, 255, 0, 0, 45); // -
-					if (abs(clicks[i]) > 9) {
-						char temp = (abs(clicks[i]) / 10) + 48;
-						draw_char(0, 28, i * 8 + 12, 255, 0, 0, temp);
-
-						temp = (abs(clicks[i]) % 10) + 48;
-						draw_char(0, 28 + 6, i * 8 + 12, 255, 0, 0, temp);
-					} else {
-						char temp = (abs(clicks[i]) % 10) + 48;
-						draw_char(0, 28, i * 8 + 12, 255, 0, 0, temp);
-					}
-				}
+				if (clicks[i] > 0)
+					draw_font(0, 22, i * 8 + 12, 255, 255, 255, "%d", clicks[i]);
+				else if (clicks[i] < 0)
+					draw_font(0, 22, i * 8 + 12, 255, 0, 0, "%d", clicks[i]);
+				else
+					draw_font(0, 22, i * 8 + 12, 0, 255, 0, "%d", clicks[i]);
 			}
 		}
 
-		draw_font(0, 205, 12, 0, 206, 206, "Audio:"); //not using %s because it is slow
-		if (sound) 
-			draw_font(0, 241, 12, 0, 206, 206, "on");
-		else 
-			draw_font(0, 241, 12, 0, 206, 206, "off");
-
-		draw_font(0, 200, 20, 0, 206, 206, "Timing:");
-		if (variation)
-			draw_font(0, 242, 20, 0, 206, 206, "random");
-		else
-			draw_font(0, 242, 20, 0, 206, 206, "rhytmic");
-
+		draw_font(0, 205, 12, 0, 206, 206, "Audio: %s", sound ? "on" : "off");
+		draw_font(0, 200, 20, 0, 206, 206, "Timing: %s", variation ? "random" : "rhytmic");
 
 		draw_font(0, 21, 186, 0, 255, 0, "Press X when the sprite is aligned with the background");
 		draw_font(0, 20, 194, 0, 255, 0, "[] button toggles horizontal and vertical movement");
@@ -970,6 +940,92 @@ void lag_test()
 		}
 
 		draw_list();
+		}
+	}
+}
+
+void alternate_240p480i()
+{
+	struct time {
+		unsigned long seconds;
+		unsigned char frames;
+	};
+
+	unsigned char frames = 0;
+	unsigned char current = 0;
+	unsigned char i = 0;
+	char interlaced = 0;
+	int dbuf = 0;
+	unsigned long seconds = 0;
+	struct time times[21];
+
+	while (1) {
+		if (display_is_old) {
+		dbuf = !dbuf;
+		GsSetDispEnvSimple(0, dbuf ? 0 : 256);
+		GsSetDrawEnvSimple(0, dbuf ? 256 : 0, x_res, 256);
+		GsSetVideoModeEx(320, 240, VMODE, 0, interlaced ? 1 : 0, 0);
+		GsSortCls(0, 0, 0);
+
+		switch (input_tap()) {
+		case PAD_TRIANGLE:
+			return;
+		case PAD_START:
+			draw_help(HELP_ALTERNATE);
+			break;
+		case PAD_CROSS:
+			times[current].seconds = seconds;
+			times[current].frames = frames;
+			current++;
+			if (current > 20)
+				current = 0;
+			if (current % 2)
+				interlaced = !interlaced;
+			break;
+		}
+
+		draw_font(0, 32, 8, 0, 255, 0, "Current Resolution");
+		draw_font(0, 140, 8, 0, 255, 0, "%d%s", interlaced ? y_res * 2 : y_res, interlaced ? "i" : "p");
+
+		draw_font(0, 32, 32, 255, 255, 255, "Elapsed Timer:");
+		draw_font(0, 140, 32, 255, 255, 255, "%02d:%02d:%02d:%02d", seconds / 3600, seconds / 60, seconds % 60, frames);
+
+		frames++;
+		if (GsScreenM == VMODE_PAL) {
+			if (frames > 49) {
+				frames = 0;
+				seconds++;
+			}
+		} else if (frames > 59) {
+			frames = 0;
+			seconds++;
+		}
+
+		for (i = 0; i < current; i++) {
+			draw_font(0, 140, 40 + i * 8, 255, 255, 255, "%02d:%02d:%02d:%02d", times[i].seconds / 3600, times[i].seconds / 60, times[i].seconds % 60, times[i].frames);
+			if (i % 2) {
+				draw_font(0, 32, 40 + i * 8, 0, 255, 0, "Viewed at:");
+
+				unsigned long diff_sec = times[i].seconds - times[i - 1].seconds;
+				if (times[i].frames < times[i - 1].frames)
+					diff_sec -= 1;
+				char diff_frames = times[i].frames - times[i - 1].frames;
+				if (diff_frames < 0)
+					diff_frames += 60;
+				draw_font(0, 200, 40 + i * 8, 255, 0, 0, "%02d:%02d:%02d:%02d", diff_sec / 3600, diff_sec / 60, diff_sec % 60, diff_frames);
+
+			} else {
+				draw_font(0, 32, 40 + i * 8, 255, 255, 0, "Switched to");
+				if (i % 4 == 0)
+					draw_font(0, 32 + 12 * 5, 40 + i * 8, 255, 255, 0, "%di at:", y_res * 2);
+				else 
+					draw_font(0, 32 + 12 * 5, 40 + i * 8, 255, 255, 0, "%dp at:", y_res);
+			}
+		}
+
+		GsDrawList();
+		while (GsIsDrawing());
+		display_is_old = 0;
 		}
 	}
 }

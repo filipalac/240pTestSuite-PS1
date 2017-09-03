@@ -28,4 +28,5 @@ void striped_test(char drop_shadow);  //drop_shadow == 1 drop_shadow drop_shadow
 void sound_test();
 void passive_lag_test();
 void lag_test();
+void alternate_240p480i();
 void audio_sync_test();

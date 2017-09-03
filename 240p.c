@@ -209,9 +209,9 @@ int main()
 		switch (input_tap()) {
 		case PAD_DOWN:
 			if (!patterns) {
-				if (cnt <= 15)
+				if (cnt <= 16)
 					cnt++;
-				if (cnt > 15)
+				if (cnt > 16)
 					cnt = 1;
 			}
 			else if (patterns) {
@@ -226,7 +226,7 @@ int main()
 				if (cnt >= 0)
 					cnt--;
 				if (cnt < 1)
-					cnt = 15;
+					cnt = 16;
 			}
 			if (patterns) {
 				cnt--;
@@ -264,11 +264,13 @@ int main()
 					break;
 				case 11: sound_test();
 					break;
-				case 12: audio_sync_test();
+				case 12: alternate_240p480i();
+					 break;
+				case 13: audio_sync_test();
 					break;
-				case 13: draw_help(HELP_GENERAL);
+				case 14: draw_help(HELP_GENERAL);
 				       break;
-				case 14: 
+				case 15: 
 					if (y_res < 240 + VMODE * 16)
 						y_res += 16;
 					else {
@@ -277,7 +279,7 @@ int main()
 					}
 
 					break;
-				case 15: draw_help(HELP_CREDITS);
+				case 16: draw_help(HELP_CREDITS);
 					 break;
 				}
 			}
@@ -324,10 +326,11 @@ int main()
 			draw_menu_font(1, cnt, 9, 40, 112, "Checkerboard"); 
 			draw_menu_font(1, cnt, 10, 40, 120, "Backlit Zone Test"); 
 			draw_menu_font(1, cnt, 11, 40, 128, "Sound Test"); 
-			draw_menu_font(1, cnt, 12, 40, 136, "Audio Sync Test"); 
-			draw_menu_font(1, cnt, 13, 40, 144, "Help"); 
-			draw_menu_font(1, cnt, 14, 40, 152, "Video: %s %dp", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res);
-			draw_menu_font(1, cnt, 15, 40, 182, "Credits"); 
+			draw_menu_font(1, cnt, 12, 40, 136, "Alternate 240p/480i"); 
+			draw_menu_font(1, cnt, 13, 40, 144, "Audio Sync Test"); 
+			draw_menu_font(1, cnt, 14, 40, 152, "Help"); 
+			draw_menu_font(1, cnt, 15, 40, 160, "Video: %s %dp", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res);
+			draw_menu_font(1, cnt, 16, 40, 182, "Credits"); 
 		}
 		if (patterns) {
 			draw_menu_font(1, cnt, 1, 40, 47, "Pluge");
