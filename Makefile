@@ -133,7 +133,7 @@ all:
 	bin2c linearity224 < patterns/linearity224.lz4 > ./patterns/linearity224.c
 	bin2c linearity240pal < patterns/linearity240pal.lz4 > ./patterns/linearity240pal.c
 	bin2c linearityw256224 < patterns/linearityw256224.lz4 > ./patterns/linearityw256224.c
-	bin2c linearityw256224pal < patterns/linearityw256240pal.lz4 > ./patterns/linearityw256224pal.c
+	bin2c linearityw256224pal < patterns/linearityw256224pal.lz4 > ./patterns/linearityw256224pal.c
 	bin2c linearitygriddot < patterns/linearitygriddot.lz4 > ./patterns/linearitygriddot.c
 	bin2c grayramp < patterns/grayramp.lz4 > ./patterns/grayramp.c
 	bin2c sharpness < patterns/sharpness.lz4 > ./patterns/sharpness.c
