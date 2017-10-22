@@ -36,6 +36,7 @@ unsigned int prim_list[0x4000];
 unsigned short input;
 
 unsigned char VMODE = VMODE_NTSC;
+unsigned char interlaced = 0;
 unsigned short x_res = 320;
 unsigned short y_res = 240;
 
@@ -49,7 +50,10 @@ void load_background()
 	const void *ptr;
 	char data_buffer[41024];
 
-	ptr = (unsigned char*)back_array + 8;
+	if (x_res == 256)
+		ptr = (unsigned char*)backw256_array + 8;
+	else
+		ptr = (unsigned char*)back_array + 8;
 
 	GsImage image;
 
@@ -74,19 +78,18 @@ void draw_background()
 	back.w = 256;
 	back.x = 0;
 	GsSortSprite(&back);
-	back.w = 64;
-	back.x = 256;
-	back.tpage = 14;
-	GsSortSprite(&back);
+	if (x_res != 256) {
+		back.w = 64;
+		back.x = 256;
+		back.tpage = 14;
+		GsSortSprite(&back);
+	}
 }
 
 void upload_sprite(GsImage *image, GsSprite *sprite, void *compressed_buffer)
 {
-	const void *ptr;
-	unsigned long *original_size;
-
-	ptr = (unsigned char*)compressed_buffer + 8;
-	original_size = compressed_buffer;
+	const void *ptr = (unsigned char*)compressed_buffer + 8;
+	unsigned long *original_size = compressed_buffer;
 
 	char data_buffer[*original_size];
 
@@ -142,6 +145,7 @@ void flip_buffer()
 
 		GsSetDispEnvSimple(0, dbuf ? 0 : 256);
 		GsSetDrawEnvSimple(0, dbuf ? 256 : 0, x_res, 256);
+		GsSetVideoModeEx(x_res, 240, VMODE, 0, interlaced, 0);
 }
 
 void draw_list()
@@ -166,6 +170,80 @@ void draw_list()
 	display_is_old = 0;
 }
 
+void video_options()
+{
+	char cnt = 1;
+
+	while (1) {
+		if (display_is_old) {
+		GsSortCls(0, 0, 0);
+		flip_buffer();
+		GsSetVideoModeEx(x_res, 240, VMODE, 0, interlaced, 0);
+
+		draw_background();
+
+		switch (input_tap()) {
+		case PAD_TRIANGLE:
+			return;
+		case PAD_DOWN:
+			if (cnt == 4)
+				cnt = 1;
+			else 
+				cnt++;
+			break;
+		case PAD_UP:
+			if (cnt == 1)
+				cnt = 4;
+			else 
+				cnt--;
+			break;
+		case PAD_CROSS:
+			switch (cnt) {
+				case 1:
+					if (x_res == 320)
+						x_res = 256;
+					else
+						x_res = 320;
+					load_background();
+					break;
+				case 2:
+					if (y_res < 240 + VMODE * 16)
+						y_res += 16;
+					else
+						y_res = 224;
+					break;
+				case 3:
+					interlaced = !interlaced;
+					break;
+				case 4:
+					VMODE = !VMODE;
+					if (y_res > 240)
+						y_res = 240;
+					break;
+			}
+			break;
+		}
+
+		draw_font(1, x_res / 2 - 14 * 5 / 2, 34, 0, 255, 0, "Video settings");
+
+		//short x = x_res == 256 ? 27 : 40;
+		short x = x_res == 256 ? 20 : 33;
+		/*
+		draw_menu_font(1, cnt, 1, x, 62, "Horizontal Resolution: %d", x_res);
+		draw_menu_font(1, cnt, 2, x, 70 + 3, "Vertical Resolution: %d%s", interlaced ? y_res * 2 : y_res, interlaced ? "i" : "p");
+		draw_menu_font(1, cnt, 3, x, 78 + 6, "Interlaced Video: %s", interlaced ? "On" : "Off");
+		draw_menu_font(1, cnt, 4, x, 86 + 9, "Video Norm: %s", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL");
+		*/
+
+		draw_menu_font(1, cnt, 1, x, 75, "Horizontal Resolution: %d", x_res);
+		draw_menu_font(1, cnt, 2, x, 85, "Vertical Resolution: %d%s", interlaced ? y_res * 2 : y_res, interlaced ? "i" : "p");
+		draw_menu_font(1, cnt, 3, x, 95, "Interlaced Video: %s", interlaced ? "On" : "Off");
+		draw_menu_font(1, cnt, 4, x, 105, "Video Norm: %s", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL");
+
+		draw_list();
+		}
+	}
+}
 
 int main()
 {
@@ -201,9 +279,9 @@ int main()
 		if (display_is_old) {
 		GsSortCls(0, 0, 0);
 		flip_buffer();
-		GsSetVideoMode(320, 240, VMODE);
 
 		draw_background();
+		gillian.x = x_res == 256 ? 177 : 221;
 		GsSortSprite(&gillian);
 
 		switch (input_tap()) {
@@ -271,13 +349,7 @@ int main()
 				case 14: draw_help(HELP_GENERAL);
 				       break;
 				case 15: 
-					if (y_res < 240 + VMODE * 16)
-						y_res += 16;
-					else {
-						VMODE = !VMODE;
-						y_res = 224;
-					}
-
+					video_options();
 					break;
 				case 16: draw_help(HELP_CREDITS);
 					 break;
@@ -314,41 +386,51 @@ int main()
 			}
 		}
 
+		int x = x_res == 256 ? 27 : 40;
+
 		if (!patterns) {
-			draw_menu_font(1, cnt, 1, 40, 47, "Test Patterns>"); //shadow, menucounter, order, x, y, text
-			draw_menu_font(1, cnt, 2, 40, 55, "Drop Shadow Test"); 
-			draw_menu_font(1, cnt, 3, 40, 63, "Striped Sprite Test"); 
-			draw_menu_font(1, cnt, 4, 40, 71, "Lag Test"); 
-			draw_menu_font(1, cnt, 5, 40, 79, "Manual Lag Test"); 
-			draw_menu_font(1, cnt, 6, 40, 88, "Scroll Test"); 
-			draw_menu_font(1, cnt, 7, 40, 96, "Grid Scroll Test"); 
-			draw_menu_font(1, cnt, 8, 40, 104, "Horizontal Stripes"); 
-			draw_menu_font(1, cnt, 9, 40, 112, "Checkerboard"); 
-			draw_menu_font(1, cnt, 10, 40, 120, "Backlit Zone Test"); 
-			draw_menu_font(1, cnt, 11, 40, 128, "Sound Test"); 
-			draw_menu_font(1, cnt, 12, 40, 136, "Alternate 240p/480i"); 
-			draw_menu_font(1, cnt, 13, 40, 144, "Audio Sync Test"); 
-			draw_menu_font(1, cnt, 14, 40, 152, "Help"); 
-			draw_menu_font(1, cnt, 15, 40, 160, "Video: %s %dp", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res);
-			draw_menu_font(1, cnt, 16, 40, 182, "Credits"); 
+			draw_menu_font(1, cnt, 1, x, 47, "Test Patterns>"); //shadow, menucounter, order, x, y, text
+			draw_menu_font(1, cnt, 2, x, 55, "Drop Shadow Test"); 
+			draw_menu_font(1, cnt, 3, x, 63, "Striped Sprite Test"); 
+			draw_menu_font(1, cnt, 4, x, 71, "Lag Test"); 
+			draw_menu_font(1, cnt, 5, x, 79, "Manual Lag Test"); 
+			draw_menu_font(1, cnt, 6, x, 88, "Scroll Test"); 
+			draw_menu_font(1, cnt, 7, x, 96, "Grid Scroll Test"); 
+			draw_menu_font(1, cnt, 8, x, 104, "Horizontal Stripes"); 
+			draw_menu_font(1, cnt, 9, x, 112, "Checkerboard"); 
+			draw_menu_font(1, cnt, 10, x, 120, "Backlit Zone Test"); 
+			draw_menu_font(1, cnt, 11, x, 128, "Sound Test"); 
+			draw_menu_font(1, cnt, 12, x, 136, "Alternateting 240p/480i"); 
+			draw_menu_font(1, cnt, 13, x, 144, "Audio Sync Test"); 
+			draw_menu_font(1, cnt, 14, x, 152, "Help");
+			//if (interlaced)
+				//draw_menu_font(1, cnt, 15, 40, 160, "Video: %s %di", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res * 2);
+			//else
+				//draw_menu_font(1, cnt, 15, 40, 160, "Video: %s %dp", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res);
+			if (interlaced)
+				draw_menu_font(1, cnt, 15, x, 160, "Video: %dx%di %s", x_res, y_res * 2, VMODE ? "PAL" : "NTSC");
+			else
+				draw_menu_font(1, cnt, 15, x, 160, "Video: %dx%dp %s", x_res, y_res, VMODE ? "PAL" : "NTSC");
+			draw_menu_font(1, cnt, 16, x, 182, "Credits"); 
 		}
 		if (patterns) {
-			draw_menu_font(1, cnt, 1, 40, 47, "Pluge");
-			draw_menu_font(1, cnt, 2, 40, 55, "Color Bars"); 
+			draw_menu_font(1, cnt, 1, x, 47, "Pluge");
+			draw_menu_font(1, cnt, 2, x, 55, "Color Bars"); 
 			if (GsScreenM  == VMODE_NTSC)
-				draw_menu_font(1, cnt, 3, 40, 63, "SMPTE Color Bars"); 
+				draw_menu_font(1, cnt, 3, x, 63, "SMPTE Color Bars"); 
 			else 
-				draw_menu_font(1, cnt, 3, 40, 63, "EBU Color Bars"); 
-			draw_menu_font(1, cnt, 4, 40, 71, "Color Bars with Gray Scale"); 
-			draw_menu_font(1, cnt, 5, 40, 79, "Color Bleed Check"); 
-			draw_menu_font(1, cnt, 6, 40, 88, "Grid"); 
-			draw_menu_font(1, cnt, 7, 40, 96, "Linearity"); 
-			draw_menu_font(1, cnt, 8, 40, 104, "Gray Ramp"); 
-			draw_menu_font(1, cnt, 9, 40, 112, "White & RGB Screens"); 
-			draw_menu_font(1, cnt, 10, 40, 120, "Sharpness"); 
-			draw_menu_font(1, cnt, 11, 40, 128, "Convergence & Focus"); 
-			draw_menu_font(1, cnt, 12, 40, 136, "Overscan"); 
+				draw_menu_font(1, cnt, 3, x, 63, "EBU Color Bars"); 
+			draw_menu_font(1, cnt, 4, x, 71, "Color Bars with Gray Scale"); 
+			draw_menu_font(1, cnt, 5, x, 79, "Color Bleed Check"); 
+			draw_menu_font(1, cnt, 6, x, 88, "Grid"); 
+			draw_menu_font(1, cnt, 7, x, 96, "Linearity"); 
+			draw_menu_font(1, cnt, 8, x, 104, "Gray Ramp"); 
+			draw_menu_font(1, cnt, 9, x, 112, "White & RGB Screens"); 
+			draw_menu_font(1, cnt, 10, x, 120, "Sharpness"); 
+			draw_menu_font(1, cnt, 11, x, 128, "Convergence & Focus"); 
+			draw_menu_font(1, cnt, 12, x, 136, "Overscan"); 
 		}
+
 
 		draw_list();
 		}

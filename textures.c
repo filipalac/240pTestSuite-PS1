@@ -58,3 +58,13 @@
 #include"patterns/back.c"
 #include"patterns/gillian.c"
 #include"patterns/convergence.c"
+
+#include"patterns/backw256.c"
+#include"patterns/colorgridw256.c"
+#include"patterns/gridw256224.c"
+#include"patterns/gridw256240.c"
+#include"patterns/gridw256256.c"
+#include"patterns/linearityw256224.c"
+#include"patterns/linearityw256224pal.c"
+#include"patterns/sharpnessw256224.c"
+#include"patterns/sharpnessw256240.c"

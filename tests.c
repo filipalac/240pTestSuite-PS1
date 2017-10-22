@@ -114,22 +114,22 @@ void backlight_zone()
 		if (padbuf.buttons & PAD_DOWN) rectangle.y < y_res - rectangle.h + YTOP224 ? rectangle.y++ : 0;
 
 		if (padbuf.type == 2 || padbuf.type == 3) {
-			signed char *current_pad_x = NULL;
-			signed char *current_pad_y = NULL;
+			signed char current_pad_x = 0;
+			signed char current_pad_y = 0;
 
 			if (padbuf.type == 2) {
-				current_pad_x = &padbuf.extra.analogJoy.x[1];
-				current_pad_y = &padbuf.extra.analogJoy.y[1];
+				current_pad_x = padbuf.extra.analogJoy.x[1];
+				current_pad_y = padbuf.extra.analogJoy.y[1];
 			} else {
-				current_pad_x = &padbuf.extra.analogPad.x[1];
-				current_pad_y = &padbuf.extra.analogPad.y[1];
+				current_pad_x = padbuf.extra.analogPad.x[1];
+				current_pad_y = padbuf.extra.analogPad.y[1];
 			}
 
 			if (rectangle.x >= 0 && rectangle.x <= x_res - rectangle.w)
-				rectangle.x += *current_pad_x / 24;
+				rectangle.x += current_pad_x / 24;
 
-			if (rectangle.y >= 0 + YTOP224 && rectangle.y <= y_res - rectangle.h - YTOP224)
-				rectangle.y += *current_pad_y / 24;
+			if (rectangle.y >= 0 + YTOP224 && rectangle.y <= y_res - rectangle.h + YTOP224)
+				rectangle.y += current_pad_y / 24;
 
 			if (rectangle.x > x_res - rectangle.w)
 				rectangle.x = x_res - rectangle.w;
@@ -223,11 +223,11 @@ void horizontal_stripes()
 			line.x[1] = 320;
 			for (i = 0; i < 256; i++) {
 				if (even) {
-					if (i % 2 == 0) {
+					if (!(i % 2)) {
 						line.y[0] = line.y[1] = i;
 						GsSortLine(&line);
 					}
-				} else if (i % 2 != 0) {
+				} else if (i % 2) {
 					line.y[0] = line.y[1] = i;
 					GsSortLine(&line);
 				}
@@ -237,11 +237,11 @@ void horizontal_stripes()
 			line.y[1] = 256;
 			for (i = 0; i < 320; i++) {
 				if (even) {
-					if (i % 2 == 0) {
+					if (!(i % 2)) {
 						line.x[0] = line.x[1] = i;
 						GsSortLine(&line);
 					}
-				} else if (i % 2 != 0) {
+				} else if (i % 2) {
 					line.x[0] = line.x[1] = i;
 					GsSortLine(&line);
 				}
@@ -344,7 +344,7 @@ void scroll_test()
 	upload_sprite(&image, &kiki, &kiki_array);
 
 	kiki.h = kiki.w = 256;
-	kiki.x  = 32;
+	kiki.x = x_res == 256 ? 0 : 32;
 
 	while (1) {
 		if (display_is_old) {
@@ -390,7 +390,7 @@ void scroll_test()
 
 			floor.x = 0;
 			floor.y = y_res == 224 ? 112 : 128;
-			floor.u += 2*speed;
+			floor.u += 2 * speed;
 			GsSortSprite(&floor);
 			floor.x = 256;
 			GsSortSprite(&floor);
@@ -424,14 +424,14 @@ void scroll_test()
 void striped_test(char drop_shadow)
 {
 	psx_pad_state padbuf;
-	signed char *current_pad_x = NULL;
-	signed char *current_pad_y = NULL;
+	signed char current_pad_x = 0;
+	signed char current_pad_y = 0;
+	unsigned char sonic_timer = 0;
 	char orientation = 0;
 	char background = 0;
 	char image_uploaded = 0;
 	char cursor = 0;
 	char even = 0;
-	int i, j = 0;
 
 	GsImage  image;
 	GsSprite motoko, striped, back[4], floor, check, shadow, buzzbomber, buzzbombershadow;
@@ -494,18 +494,18 @@ void striped_test(char drop_shadow)
 
 		if (padbuf.type == 2 || padbuf.type == 3) {
 			if (padbuf.type == 2) {
-				current_pad_x = &padbuf.extra.analogJoy.x[1];
-				current_pad_y = &padbuf.extra.analogJoy.y[1];
+				current_pad_x = padbuf.extra.analogJoy.x[1];
+				current_pad_y = padbuf.extra.analogJoy.y[1];
 			} else {
-				current_pad_x = &padbuf.extra.analogPad.x[1];
-				current_pad_y = &padbuf.extra.analogPad.y[1];
+				current_pad_x = padbuf.extra.analogPad.x[1];
+				current_pad_y = padbuf.extra.analogPad.y[1];
 			}
 
 			if (striped.x >= 0 && striped.x <= x_res - striped.w)
-				striped.x += *current_pad_x / 24;
+				striped.x += current_pad_x / 24;
 
 			if (striped.y >= 0 + YTOP224 && striped.y <= y_res - striped.h + YTOP224)
-				striped.y += *current_pad_y / 24 + YTOP224;
+				striped.y += current_pad_y / 24;
 
 			if (striped.x > x_res - striped.w)
 				striped.x = x_res - striped.w;
@@ -516,32 +516,33 @@ void striped_test(char drop_shadow)
 			if (striped.x < 0)
 				striped.x = 0;
 
-			if (striped.y < 0)
-				striped.y = 0;
+			if (striped.y < 0 + YTOP224)
+				striped.y = 0 + YTOP224;
 		}
 
 		switch (background) {
 		case 0:
-			if (!image_uploaded) {  //this control is needed because it is in loop
+			if (!image_uploaded) {  // This control is needed because it is in loop
 				upload_sprite(&image, &motoko, &motoko_array);
 				image_uploaded = 1;
 			}
 			GsSortCls(255, 255, 255);
 
 			motoko.y = y_res == 224 ? - 8 : 0; 
+			motoko.scalex = x_res == 256 ? 3276 : 0;
 			motoko.x = 0;
-			motoko.w = 256;
+			motoko.w = 255;
 			motoko.tpage = 5;
 			motoko.attribute = COLORMODE(COLORMODE_8BPP);
 			GsSortSprite(&motoko);
-			motoko.x = 256;
+			motoko.x = x_res == 256 ? 203 : 255;
 			motoko.w = 64;
 			motoko.tpage = 7;
 			GsSortSprite(&motoko);
 			break;
 		case 1:
-			for (i = 0; i < 320; i++) {
-				if (i % 2 == 0) {
+			for (unsigned int i = 0; i < 320; i++) {
+				if (!(i % 2)) {
 					line.y[0] = line.y[1] = i;
 					GsSortLine(&line);
 				}
@@ -566,15 +567,15 @@ void striped_test(char drop_shadow)
 				upload_sprite(&image, &back[3], &sonicback4_array);
 				image_uploaded = 1;
 			}
-			j++;
-			if (j > 119)
-				j = 0;
+			sonic_timer++;
+			if (sonic_timer > 119)
+				sonic_timer = 0;
 
-			back[j/30].x = 0;
+			back[sonic_timer/30].x = 0;
 			back[0].u = back[1].u = back[2].u = back[3].u = striped.x;
-			GsSortSprite(&back[j/30]);
-			back[j/30].x = 256;
-			GsSortSprite(&back[j/30]);
+			GsSortSprite(&back[sonic_timer/30]);
+			back[sonic_timer/30].x = 256;
+			GsSortSprite(&back[sonic_timer/30]);
 
 			floor.x = 0;
 			floor.y = y_res == 224 ? 112 : 128;
@@ -598,13 +599,13 @@ void striped_test(char drop_shadow)
 				break;
 			case 1:
 				if ((padbuf.buttons & PAD_LEFT && orientation)
-					|| ( *current_pad_x <= - 24 && orientation)) {
+					|| ( current_pad_x <= - 24 && orientation)) {
 
 				       	buzzbomber.attribute = buzzbombershadow.attribute = 0;
 					orientation = !orientation;
 				}
 				else if ((padbuf.buttons & PAD_RIGHT && !orientation)
-					|| ( *current_pad_x >= 24 && !orientation)) { 
+					|| ( current_pad_x >= 24 && !orientation)) { 
 
 				       	buzzbomber.attribute = buzzbombershadow.attribute = H_FLIP;
 					orientation = !orientation;
@@ -674,10 +675,12 @@ void sound_test()
 
 		draw_background();
 
-		draw_font(1, 130, 60, 0, 255, 0, "Sound Test");
-		draw_menu_font(1, cnt, 0, 80, 120, "Left Channel");
-		draw_menu_font(1, cnt, 1, 120, 130, "Center Channel");
-		draw_menu_font(1, cnt, 2, 160, 120, "Right Channel");
+		short center_x = x_res / 2;
+
+		draw_font(1, center_x - 10 * 5 / 2, 60, 0, 255, 0, "Sound Test");
+		draw_menu_font(1, cnt, 0, center_x - 12 * 5 / 2 - 50, 120, "Left Channel");
+		draw_menu_font(1, cnt, 1, center_x - 14 * 5 / 2, 130, "Center Channel");
+		draw_menu_font(1, cnt, 2, center_x - 13 * 5 / 2 + 50, 120, "Right Channel");
 
 		draw_list();
 		}     
@@ -689,15 +692,16 @@ void passive_lag_test()
 	char circlecnt = 0;
 	char frame = 0;
 	char pause = 0;
+	unsigned short i = 0;
 	unsigned long seconds = 0;
-	int i = 0;
-
-	load_numbers();
 
 	GsImage image;
 	GsSprite circle;
 
+	load_numbers();
 	upload_sprite(&image, &circle, &circle_array);
+
+	circle.scalex = SCALE_ONE / (x_res == 256 ? 1.25 : 1);
 
 	while (1) {
 		if (display_is_old) {
@@ -736,31 +740,31 @@ void passive_lag_test()
 				seconds = 0;
 		}
 
-		draw_font(0, 32, 8, 0, 0, 0, "hours");
-		draw_font(0, 104, 8, 0, 0, 0, "minutes");
-		draw_font(0, 176, 8, 0, 0, 0, "seconds");
-		draw_font(0, 248, 8, 0, 0, 0, "frames");
+		draw_font(0, x_res == 256 ? 12 : 32, 8, 0, 0, 0, "hours");
+		draw_font(0, x_res == 256 ? 74 : 104, 8, 0, 0, 0, "minutes");
+		draw_font(0, x_res == 256 ? 136 : 176, 8, 0, 0, 0, "seconds");
+		draw_font(0, x_res == 256 ? 196 : 248, 8, 0, 0, 0, "frames");
 
 		//Draw counter separators
-		draw_number(80, 16, 0, 0, 0, 10);  //10 == :
-		draw_number(152, 16, 0, 0, 0, 10);
-		draw_number(224, 16, 0, 0, 0, 10);
+		draw_number(x_res == 256 ? 55 : 80, 16, 0, 0, 0, 10);  //10 == :
+		draw_number(x_res == 256 ? 117 : 152, 16, 0, 0, 0, 10);
+		draw_number(x_res == 256 ? 179 : 224, 16, 0, 0, 0, 10);
 
-		//Draw Frames
-		draw_number(248, 16, 0, 0, 0, frame / 10);
-		draw_number(272, 16, 0, 0, 0, frame % 10);
-		//Draw Seconds
-		draw_number(176, 16, 0, 0, 0, (seconds % 60) / 10);
-		draw_number(200, 16, 0, 0, 0, seconds % 10);
-		//Draw Minutes
-		draw_number(104, 16, 0, 0, 0, (seconds / 60) % 60 / 10);
-		draw_number(128, 16, 0, 0, 0, (seconds / 60) % 10);
 		//Draw Hours
-		draw_number(32, 16, 0, 0, 0, (frame / 3600) % 60 / 10);
-		draw_number(56, 16, 0, 0, 0, (frame / 3600) % 10);
+		draw_number(x_res == 256 ? 12 : 32, 16, 0, 0, 0, (frame / 3600) % 60 / 10);
+		draw_number(x_res == 256 ? 36 : 56, 16, 0, 0, 0, (frame / 3600) % 10);
+		//Draw Minutes
+		draw_number(x_res == 256 ? 74 : 104, 16, 0, 0, 0, (seconds / 60) % 60 / 10);
+		draw_number(x_res == 256 ? 98 : 128, 16, 0, 0, 0, (seconds / 60) % 10);
+		//Draw Seconds
+		draw_number(x_res == 256 ? 136 : 176, 16, 0, 0, 0, (seconds % 60) / 10);
+		draw_number(x_res == 256 ? 160 : 200, 16, 0, 0, 0, seconds % 10);
+		//Draw Frames
+		draw_number(x_res == 256 ? 198 : 248, 16, 0, 0, 0, frame / 10);
+		draw_number(x_res == 256 ? 222 : 272, 16, 0, 0, 0, frame % 10);
 
 		for (i = 0, circle.y = 56; circle.y <= 136; circle.y += 80) {
-			for (circle.x = 16; circle.x <= 256; circle.x += 80, i++) {
+			for (circle.x = (x_res == 256 ? 8 : 16); circle.x <= (x_res == 256 ? 197 : 256); circle.x += (x_res == 256 ? 63 : 80), i++) {
 				if (i == circlecnt) {
 					circle.r = 255;
 					circle.g = 0;
@@ -771,10 +775,9 @@ void passive_lag_test()
 					circle.b = 255;
 				}
 				GsSortSprite(&circle);
-				draw_number(circle.x + 20, circle.y + 12, 255, 255, 255, i + 1);
+				draw_number(circle.x + 20 - (x_res == 256 ? 7 : 0), circle.y + 12, 255, 255, 255, i + 1);
 			}
 		}
-
 		draw_list();
 		}
 	}
@@ -783,7 +786,6 @@ void passive_lag_test()
 void lag_test()
 {
 	unsigned char pos = 0;
-	unsigned char i = 0;
 	char offset = 0;
 	char speed = 1;
 	char variation = 1;
@@ -802,6 +804,8 @@ void lag_test()
 	SsVoiceStartAddr(0, SPU_DATA_BASE_ADDR);
 	SsVoicePitch(0, 0x1000 / (44100 / 16000));
 	SsVoiceVol(0, 0x3fff, 0x3fff);
+
+	srand(*((unsigned int*)0x1F801100));
 
 	while (1) {
 		if (display_is_old) {
@@ -836,7 +840,7 @@ void lag_test()
 		}
 
 		lagper.r = 255; lagper.g = 255; lagper.b = 255;
-		lagper.x = 144; lagper.y = 96; 
+		lagper.x = x_res / 2 - 16; lagper.y = 96; 
 		GsSortSprite(&lagper);
 
 		if (offset > 36 + var || offset < - 36 - var) //Change direction
@@ -870,25 +874,25 @@ void lag_test()
 			lagper.r = lagper.g = lagper.b = 255;
 
 		if (view == 0) { //Y Axis only
-			lagper.x = 144;
+			lagper.x = x_res / 2 - 16;
 			lagper.y = 96 + offset;
 			GsSortSprite(&lagper);
 		}
 		else if (view == 1) { //X Axis only
-			lagper.x = 144 + offset;
+			lagper.x = x_res / 2 - 16 + offset;
 			lagper.y = 96 ;
 			GsSortSprite(&lagper);
 		}
 		else if (view == 2) { //Both Axis move
-			lagper.x = 144;
+			lagper.x = x_res / 2 - 16;
 			lagper.y = 96 + offset;
 			GsSortSprite(&lagper);
-			lagper.x = 144 + offset;
+			lagper.x = x_res / 2 - 16 + offset;
 			lagper.y = 96;
 			GsSortSprite(&lagper);
 		} 
 
-		for (i = 0; i <= pos && pos != 10; i++) { //draw top left table with offsets
+		for (unsigned char i = 0; i <= pos && pos != 10; i++) { //draw top left table with offsets
 			if (clicks[i] != 99) {
 				draw_font(0, 8, i * 8 + 12, 0, 255, 255,"%d:", i);
 
@@ -901,22 +905,24 @@ void lag_test()
 			}
 		}
 
-		draw_font(0, 205, 12, 0, 206, 206, "Audio: %s", sound ? "on" : "off");
-		draw_font(0, 200, 20, 0, 206, 206, "Timing: %s", variation ? "random" : "rhytmic");
-
-		draw_font(0, 21, 186, 0, 255, 0, "Press X when the sprite is aligned with the background");
-		draw_font(0, 20, 194, 0, 255, 0, "[] button toggles horizontal and vertical movement");
+		draw_font(0, x_res - 90, 12, 0, 206, 206, "Audio: %s", sound ? "on" : "off");
+		draw_font(0, x_res - 95, 20, 0, 206, 206, "Timing: %s", variation ? "random" : "rhytmic");
+		if (x_res == 256) {
+			draw_font(0, 21, 186, 0, 255, 0, "Press X when the sprite is aligned");
+			draw_font(0, 20, 194, 0, 255, 0, "[] button toggles horizontal/vertical");
+		} else {
+			draw_font(0, 21, 186, 0, 255, 0, "Press X when the sprite is aligned with the background");
+			draw_font(0, 20, 194, 0, 255, 0, "[] button toggles horizontal and vertical movement");
+		}
 		draw_font(0, 20, 202, 0, 255, 0, "() button toggles rhytmic timing");
 		draw_font(0, 20, 210, 0, 255, 0, "R1 button toggles audio");
 
 		if (pos >= 10) { //end page
-			sound = 0;
-			double res = 0, ms = 0;
-
 			draw_background();
 
-			for (i = 0; i < 10; i++) {
+			for (unsigned char i = 0; i < 10; i++) {
 				draw_font(1, 60, 102, 0, 206, 206, "+");
+				draw_font(1, 55, 142, 0, 206, 206, "_____");
 				if (clicks[i] == 0) {
 					draw_font(1, 70, i * 8 + 62, 0, 255, 0, "%d", clicks[i] / 10);
 					draw_font(1, 75, i * 8 + 62, 0, 255, 0, "%d", clicks[i] % 10);
@@ -924,19 +930,30 @@ void lag_test()
 					draw_font(1, 70, i * 8 + 62, 255, 255, 255, "%d", clicks[i] / 10);
 					draw_font(1, 75, i * 8 + 62, 255, 255, 255, "%d", clicks[i] % 10);
 				}
-
-				draw_font(1, 55, 142, 0, 206, 206, "_____");
-				res = (double)total / 10.0;
-				if (GsScreenM == VMODE_NTSC)
-					ms = (double)(res * (1000.0/60.0));
-				else 
-					ms = (double)(res * (1000.0/50.0));
-				draw_font(1, 70, 150, 255, 255, 255, "%d/10 = %0.2f frames \n%0.2f miliseconds", total, res , ms);
-				if (GsScreenM == VMODE_NTSC)
-					draw_font(1, 45, 166, 0, 255, 0, "Keep in mind that frame is around 16.67 ms.");
-				else 
-					draw_font(1, 45, 166, 0, 255, 0, "Keep in mind that frame is around 20 ms.");
 			}
+			sound = 0; // disable beep
+			float ms;
+
+			if (GsScreenM == VMODE_NTSC)
+				ms = (float)(1000.0/59.29);
+			else 
+				ms = (float)(1000.0/49.76);
+
+			float frames = (float)total / 10.0f;
+			short fint = (short)frames;
+			short fdec = (short)((frames - (float)fint + 0.005) * 100.0f);
+			draw_font(1, 70 - 25, 150, 255, 255, 255, "%d/10 = %d.%0.2d frames", total, fint , fdec);
+
+			float totalms = ms * frames;
+			frames = (float)total / 10.0f;
+			fint = (short)totalms;
+			fdec = (short)((totalms - (float)fint) * 100.0f);
+			draw_font(1, 70 - 25, 158, 255, 255, 255, "%d.%0.2d miliseconds", fint, fdec);
+
+			if (GsScreenM == VMODE_NTSC)
+				draw_font(1, x_res == 256 ? 20 : 45, 166, 0, 255, 0, "Keep in mind that frame is around 16.87 ms.");
+			else 
+				draw_font(1, x_res == 256 ? 20 : 45, 166, 0, 255, 0, "Keep in mind that frame is around 20.09 ms.");
 		}
 
 		draw_list();
@@ -953,10 +970,9 @@ void alternate_240p480i()
 
 	unsigned char frames = 0;
 	unsigned char current = 0;
-	unsigned char i = 0;
-	char interlaced = 0;
-	int dbuf = 0;
 	unsigned long seconds = 0;
+	char interlacing = 0;
+	int dbuf = 0;
 	struct time times[21];
 
 	while (1) {
@@ -964,7 +980,7 @@ void alternate_240p480i()
 		dbuf = !dbuf;
 		GsSetDispEnvSimple(0, dbuf ? 0 : 256);
 		GsSetDrawEnvSimple(0, dbuf ? 256 : 0, x_res, 256);
-		GsSetVideoModeEx(320, 240, VMODE, 0, interlaced ? 1 : 0, 0);
+		GsSetVideoModeEx(x_res, 240, VMODE, 0, interlacing ? 1 : 0, 0);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -980,15 +996,17 @@ void alternate_240p480i()
 			if (current > 20)
 				current = 0;
 			if (current % 2)
-				interlaced = !interlaced;
+				interlacing = !interlacing;
 			break;
 		}
 
-		draw_font(0, 32, 8, 0, 255, 0, "Current Resolution");
-		draw_font(0, 140, 8, 0, 255, 0, "%d%s", interlaced ? y_res * 2 : y_res, interlaced ? "i" : "p");
+		char x_offset = x_res == 256 ? - 16 : 0;
 
-		draw_font(0, 32, 32, 255, 255, 255, "Elapsed Timer:");
-		draw_font(0, 140, 32, 255, 255, 255, "%02d:%02d:%02d:%02d", seconds / 3600, seconds / 60, seconds % 60, frames);
+		draw_font(0, 32 + x_offset, 8, 0, 255, 0, "Current Resolution");
+		draw_font(0, 140 + x_offset, 8, 0, 255, 0, "%d%s", interlacing ? y_res * 2 : y_res, interlacing ? "i" : "p");
+		draw_font(0, 32 + x_offset, 32, 255, 255, 255, "Elapsed Timer:");
+		draw_font(0, 140 + x_offset, 32, 255, 255, 255, "%02d:%02d:%02d:%02d",
+			       	seconds / 3600, seconds / 60, seconds % 60, frames);
 
 		frames++;
 		if (GsScreenM == VMODE_PAL) {
@@ -1001,26 +1019,31 @@ void alternate_240p480i()
 			seconds++;
 		}
 
-		for (i = 0; i < current; i++) {
-			draw_font(0, 140, 40 + i * 8, 255, 255, 255, "%02d:%02d:%02d:%02d", times[i].seconds / 3600, times[i].seconds / 60, times[i].seconds % 60, times[i].frames);
+		for (unsigned char i = 0; i < current; i++) {
 			if (i % 2) {
-				draw_font(0, 32, 40 + i * 8, 0, 255, 0, "Viewed at:");
+				draw_font(0, 32 + x_offset, 40 + i * 8, 0, 255, 0, "Viewed at:");
 
 				unsigned long diff_sec = times[i].seconds - times[i - 1].seconds;
 				if (times[i].frames < times[i - 1].frames)
 					diff_sec -= 1;
+
 				char diff_frames = times[i].frames - times[i - 1].frames;
 				if (diff_frames < 0)
 					diff_frames += 60;
-				draw_font(0, 200, 40 + i * 8, 255, 0, 0, "%02d:%02d:%02d:%02d", diff_sec / 3600, diff_sec / 60, diff_sec % 60, diff_frames);
 
+				draw_font(0, 200 + x_offset, 40 + i * 8, 255, 0, 0, "%02d:%02d:%02d:%02d",
+					       	diff_sec / 3600, diff_sec / 60, diff_sec % 60, diff_frames);
 			} else {
-				draw_font(0, 32, 40 + i * 8, 255, 255, 0, "Switched to");
+				draw_font(0, 32 + x_offset, 40 + i * 8, 255, 255, 0, "Switched to");
+
 				if (i % 4 == 0)
-					draw_font(0, 32 + 12 * 5, 40 + i * 8, 255, 255, 0, "%di at:", y_res * 2);
+					draw_font(0, 32 + 12 * 5 + x_offset, 40 + i * 8, 255, 255, 0, "%di at:", y_res * 2);
 				else 
-					draw_font(0, 32 + 12 * 5, 40 + i * 8, 255, 255, 0, "%dp at:", y_res);
+					draw_font(0, 32 + 12 * 5 + x_offset, 40 + i * 8, 255, 255, 0, "%dp at:", y_res);
 			}
+
+			draw_font(0, 140 + x_offset, 40 + i * 8, 255, 255, 255, "%02d:%02d:%02d:%02d",
+				       	times[i].seconds / 3600, times[i].seconds / 60, times[i].seconds % 60, times[i].frames);
 		}
 
 		GsDrawList();
@@ -1041,13 +1064,17 @@ void audio_sync_test()
 
 	GsRectangle dot;
 	dot.r = dot.g = dot.b = 255;
-	dot.x = 160; dot.y = 160;
+	dot.x = x_res / 2; dot.y = 160;
 	dot.w = dot.h = 2;
 	dot.attribute = 0;
 
 	GsRectangle square;
 	square.r = square.g = square.b = 255;
-	square.w = square.h = 32;
+	if (x_res == 256) {
+		square.w = 28;  square.h = 28;
+	} else {
+		square.w = square.h = 32;
+	}
 	square.x = 0; square.y = 48;
 
 	GsRectangle ground;
@@ -1060,8 +1087,8 @@ void audio_sync_test()
 		if (display_is_old) {
 		GsSortCls(0, 0, 0);
 		GsSetDispEnvSimple(0, 0);
-		GsSetDrawEnvSimple(0, 0, 320, 256);
-		GsSetVideoModeEx(320, 240, VMODE, 0, 0, 0);
+		GsSetDrawEnvSimple(0, 0, x_res, 256);
+		GsSetVideoModeEx(x_res, 240, VMODE, 0, interlaced, 0);
 
 		switch (input_tap()) {
 		case PAD_TRIANGLE:

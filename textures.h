@@ -60,3 +60,13 @@ extern unsigned char lagper_array[];
 extern unsigned char back_array[];
 extern unsigned char gillian_array[];
 extern unsigned char convergence_array[];
+
+extern unsigned char backw256_array[];
+extern unsigned char colorgridw256_array[];
+extern unsigned char gridw256224_array[];
+extern unsigned char gridw256240_array[];
+extern unsigned char gridw256256_array[];
+extern unsigned char linearityw256224_array[];
+extern unsigned char linearityw256224pal_array[];
+extern unsigned char sharp256224_array[];
+extern unsigned char sharp256240_array[];

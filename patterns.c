@@ -26,6 +26,7 @@
 #include"textures.h"
 
 #define YTOP224 (y_res == 224 ? 8 : 0)
+#define SCALE_TO_256 (x_res == 256 ? 3276 : 0)
 
 void pluge()
 {
@@ -47,12 +48,13 @@ void pluge()
 			break;
 		}
 
-		sprite.w = 256;
+		sprite.w = 255;
+		sprite.scalex = SCALE_TO_256;
 		sprite.x = 0;
 		sprite.tpage = 5;
 		GsSortSprite(&sprite);
 		sprite.w = 64;
-		sprite.x = 256;
+		sprite.x = x_res == 256 ? 203 : 255;
 		sprite.tpage = 6;
 		GsSortSprite(&sprite);
 
@@ -70,7 +72,10 @@ void color_bars()
 	GsSprite color,colorgrid;
 
 	upload_sprite(&image, &color, &color_array);
-	upload_sprite(&image, &colorgrid, &colorgrid_array);
+	if (x_res == 256)
+		upload_sprite(&image, &colorgrid, &colorgridw256_array);
+	else
+		upload_sprite(&image, &colorgrid, &colorgrid_array);
 
 	while (1) {
 		if (display_is_old) {
@@ -89,12 +94,13 @@ void color_bars()
 		}
 
 		if (!grid) {
-			color.w = 256;
+			color.w = 255;
+			color.scalex = SCALE_TO_256;
 			color.x = 0;
 			color.tpage = 5;
 			GsSortSprite(&color);
 			color.w = 64;
-			color.x = 256;
+			color.x = x_res == 256 ? 203 : 255;
 			color.tpage = 7;
 			GsSortSprite(&color);
 		} else {
@@ -102,10 +108,12 @@ void color_bars()
 			colorgrid.x = 0;
 			colorgrid.tpage = 10;
 			GsSortSprite(&colorgrid);
-			colorgrid.w = 64;
-			colorgrid.x = 256;
-			colorgrid.tpage = 12;
-			GsSortSprite(&colorgrid);
+			if (x_res != 256) {
+				colorgrid.w = 64;
+				colorgrid.x = 256;
+				colorgrid.tpage = 12;
+				GsSortSprite(&colorgrid);
+			}
 		}
 
 		draw_list();
@@ -147,29 +155,33 @@ void smpte_color_bars()
 		}
 
 		if (!limited) {
-			sprite100.y = 0;
 			sprite100.tpage = 5;
 			sprite100.x = 0;
-			sprite100.w = 256;
+			sprite100.scalex = SCALE_TO_256;
+			sprite100.h = x_res == 256 ? 255 : 256;
+			sprite100.w = x_res == 256 ? 255 : 256;
 			GsSortSprite(&sprite100);
 			sprite100.tpage = 6;
-			sprite100.x = 256;
+			sprite100.x = x_res == 256 ? 203 : 256;
+			sprite100.scalex = 0;
 			sprite100.w = 64;
 			GsSortSprite(&sprite100);
 		} else {
-			sprite75.y = 0;
 			sprite75.tpage = 10;
 			sprite75.x = 0;
-			sprite75.w = 256;
+			sprite75.scalex = SCALE_TO_256;
+			sprite75.h = x_res == 256 ? 255 : 256;
+			sprite75.w = x_res == 256 ? 255 : 256;
 			GsSortSprite(&sprite75);
 			sprite75.tpage = 11;
-			sprite75.x = 256;
+			sprite75.scalex = 0;
+			sprite75.x = x_res == 256 ? 203 : 256;
 			sprite75.w = 64;
 			GsSortSprite(&sprite75);
 		}
 
 		if (frame_time > 0) {
-			draw_font(1, 260, 20, 255, 255, 255, "%s %%", limited ? "75" : "100");
+			draw_font(1, x_res == 256 ? 192 : 260, 20, 255, 255, 255, "%s", limited ? "75 %" : "100 %");
 			frame_time--;
 		}
 
@@ -188,7 +200,7 @@ void color_bars_with_gray_reference()
 	while (1) {
 		if (display_is_old) {
 		flip_buffer();
-		GsSortCls(0, 0, 0);
+		GsSortCls(192, 192, 192);
 
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
@@ -198,12 +210,13 @@ void color_bars_with_gray_reference()
 			break;
 		}
 
-		sprite.w = 256;
+		sprite.w = x_res == 256 ? 255 : 256;
+		sprite.scalex = SCALE_TO_256;
 		sprite.x = 0;
 		sprite.tpage = 5;
 		GsSortSprite(&sprite);
 		sprite.w = 64;
-		sprite.x = 256;
+		sprite.x = x_res == 256 ? 203 : 256;
 		sprite.tpage = 6;
 		GsSortSprite(&sprite);
 
@@ -240,23 +253,27 @@ void color_bleed_check()
 		}
 
 		if (!chk) {
-			sprite.w = 256;
+			sprite.w = x_res == 256 ? 240 : 256;
 			sprite.x = 0;
 			sprite.tpage = 5;
 			GsSortSprite(&sprite);
-			sprite.w = 64;
-			sprite.x = 256;
-			sprite.tpage = 6;
-			GsSortSprite(&sprite);
+			if (x_res != 256) {
+				sprite.w = 64;
+				sprite.x = 256;
+				sprite.tpage = 6;
+				GsSortSprite(&sprite);
+			}
 		} else {
-			spritechk.w = 256;
+			spritechk.w = x_res == 256 ? 240: 256;
 			spritechk.x = 0;
 			spritechk.tpage = 10;
 			GsSortSprite(&spritechk);
-			spritechk.w = 64;
-			spritechk.x = 256;
-			spritechk.tpage = 11;
-			GsSortSprite(&spritechk);
+			if (x_res != 256) {
+				spritechk.w = 64;
+				spritechk.x = 256;
+				spritechk.tpage = 11;
+				GsSortSprite(&spritechk);
+			}
 		}
 
 		draw_list();
@@ -273,10 +290,17 @@ void grid()
 	GsImage image;
 	GsSprite sprite224, sprite240, sprite256;
 
-	upload_sprite(&image, &sprite224, &grid224_array);
-	upload_sprite(&image, &sprite240, &grid240_array);
-	if (GsScreenM == VMODE_PAL)
-		upload_sprite(&image, &sprite256, &grid256_array);
+	if (x_res == 256) {
+		upload_sprite(&image, &sprite224, &gridw256224_array);
+		upload_sprite(&image, &sprite240, &gridw256240_array);
+		if (GsScreenM == VMODE_PAL)
+			upload_sprite(&image, &sprite256, &gridw256256_array);
+	} else {
+		upload_sprite(&image, &sprite224, &grid224_array);
+		upload_sprite(&image, &sprite240, &grid240_array);
+		if (GsScreenM == VMODE_PAL)
+			upload_sprite(&image, &sprite256, &grid256_array);
+	}
 
 	GsRectangle background;
 	background.r = background.g = background.b = 66;
@@ -321,10 +345,6 @@ void grid()
 			sprite224.x = 256;
 			sprite224.tpage = 6;
 			GsSortSprite(&sprite224);
-			if (frame_time > 0) {
-				draw_font(1, 230, 20, 0, 255, 0, "320x224");
-		       		frame_time--;
-			}
 			break;
 		case 1:
 			sprite240.y = background.y = 0;
@@ -337,10 +357,6 @@ void grid()
 			sprite240.x = 256;
 			sprite240.tpage = 8;
 			GsSortSprite(&sprite240);
-			if (frame_time > 0) {
-				draw_font(1, 230, 20, 0, 255, 0, "320x240");
-				frame_time--;
-			}
 			break;
 		case 2:
 			sprite256.y = background.y = 0;
@@ -353,11 +369,11 @@ void grid()
 			sprite256.x = 256;
 			sprite256.tpage = 10;
 			GsSortSprite(&sprite256);
-			if (frame_time > 0) {
-				draw_font(1, 230, 20, 0, 255, 0, "320x256");
-				frame_time--;
-			}
 			break;
+		}
+		if (frame_time > 0) {
+			draw_font(1, x_res == 256 ? 192 : 230, 20, 0, 255, 0, "%dx%d", x_res, (224 + gridsel * 16));
+	       		frame_time--;
 		}
 
 		draw_list();
@@ -370,16 +386,21 @@ void linearity()
 	char show_grid = 0;
 	char show_griddot = 0;
 	char linsel = (GsScreenM == VMODE_PAL && y_res >= 240) ? 2 : 0;
-	int x, y;
 	int frame_time = 90;
 
 	GsImage image;
 	GsSprite sprite, sprite224, sprite240pal, grid, griddot;
 
-	upload_sprite(&image, &sprite224, &linearity224_array);
-	if (y_res >= 240) {
-		upload_sprite(&image, &sprite, &linearity_array);
-		upload_sprite(&image, &sprite240pal, &linearity240pal_array);
+	if (x_res > 256) {
+		upload_sprite(&image, &sprite224, &linearity224_array);
+		if (y_res >= 240) {
+			upload_sprite(&image, &sprite, &linearity_array);
+			upload_sprite(&image, &sprite240pal, &linearity240pal_array);
+		}
+	} else {
+		upload_sprite(&image, &sprite224, &linearityw256224_array);
+		if (y_res > 224)
+			upload_sprite(&image, &sprite240pal, &linearityw256224pal_array);
 	}
 
 	upload_sprite(&image, &grid, &lingrid_array);
@@ -409,6 +430,8 @@ void linearity()
 			linsel++;
 			if (linsel > (y_res / 225 * 2))
 				linsel = 0;
+			if (x_res < 320 && linsel == 1)
+				linsel = 2;
 			break;
 		}
 
@@ -421,6 +444,7 @@ void linearity()
 			GsSortSprite(&grid);
 		}
 		if (show_griddot) {
+			int x, y;
 			for (y = 0; y != (linsel == 0 ? 28 : 30); y++) {
 				for (x = 0; x != 40; x++) {
 					griddot.x = x * 8;
@@ -443,7 +467,7 @@ void linearity()
 			sprite224.tpage = 8;
 			GsSortSprite(&sprite224);
 			if (frame_time > 0) {
-				draw_font(1, 230, 20, 0, 255, 0, "320x224 NTSC");
+				draw_font(1, x_res == 256 ? 192 : 230, 20, 0, 255, 0, "%dx224 NTSC", x_res);
 		       		frame_time--;
 			}
 			break;
@@ -457,13 +481,14 @@ void linearity()
 			sprite.tpage = 6;
 			GsSortSprite(&sprite);
 			if (frame_time > 0) {
-				draw_font(1, 230, 20, 0, 255, 0, "320x240 NTSC");
+				draw_font(1, x_res == 256 ? 192 : 230, 20, 0, 255, 0, "%dx240 NTSC", x_res);
 		       		frame_time--;
 			}
 			break;
 		case 2:
 			sprite240pal.w = 256;
 			sprite240pal.x = 0;
+			sprite240pal.y = x_res == 256 ? 8 : 0; // If x_res == 256 image is only 224p
 			sprite240pal.tpage = 9;
 			GsSortSprite(&sprite240pal);
 			sprite240pal.w = 64;
@@ -471,7 +496,7 @@ void linearity()
 			sprite240pal.tpage = 10;
 			GsSortSprite(&sprite240pal);
 			if (frame_time > 0) {
-				draw_font(1, 230, 20, 0, 255, 0, "320x240 PAL");
+				draw_font(1, x_res == 256 ? 192 : 230, 20, 0, 255, 0, "%dx%s PAL", x_res, x_res == 256 ? "224" : "240");
 		       		frame_time--;
 			}
 			break;
@@ -502,12 +527,16 @@ void gray_ramp()
 			break;
 		}
 
-		sprite.w = 256;
+		sprite.w = 255 + x_res / 257;
+		sprite.h = 255 + x_res / 257;
+		sprite.scalex = SCALE_TO_256;
+		sprite.y = YTOP224;
 		sprite.x = 0;
 		sprite.tpage = 5;
 		GsSortSprite(&sprite);
 		sprite.w = 64;
-		sprite.x = 256;
+		sprite.y = YTOP224;
+		sprite.x = x_res == 256 ? 203 : 255;
 		sprite.tpage = 7;
 		GsSortSprite(&sprite);
 
@@ -531,8 +560,8 @@ void white_and_rgb_screens()
 
 	GsRectangle box;
 	box.r = box.g = box.b = 1;
-	box.x = 150; box.y = 13;
-	box.w = 130; box.h = 8;
+	box.x = x_res - 160; box.y = 13;
+	box.w = 140; box.h = 8;
 	box.attribute = ENABLE_TRANS | TRANS_MODE(0);
 
 	while (1) {
@@ -584,15 +613,14 @@ void white_and_rgb_screens()
 			break;
 		case 8:
 			GsSortRectangle(&box);
-			draw_menu_font(0, rgb_cnt, 1, 160, 13, "R:%d", r >> 3);
-			draw_menu_font(0, rgb_cnt, 2, 205, 13, "G:%d", g >> 3);
-			draw_menu_font(0, rgb_cnt, 3, 250, 13, "B:%d", b >> 3);
+			draw_menu_font(0, rgb_cnt, 1, x_res - 150, 13, "R:%d", r >> 3);
+			draw_menu_font(0, rgb_cnt, 2, x_res - 100, 13, "G:%d", g >> 3);
+			draw_menu_font(0, rgb_cnt, 3, x_res - 50, 13, "B:%d", b >> 3);
 
 			if (input & PAD_RIGHT && rgb_cnt != 3)
 				rgb_cnt++;
 			if (input & PAD_LEFT && rgb_cnt != 1)
 				rgb_cnt--;
-
 
 			switch (rgb_cnt) {
 			case 1:
@@ -648,9 +676,17 @@ void sharpness()
 	GsImage image;
 	GsSprite sprite, sprite224;
 
-	upload_sprite(&image, &sprite224, &sharpness224_array);
-	if (y_res >= 240)
+	if (x_res == 256)
+		upload_sprite(&image, &sprite224, &sharp256224_array);
+	else
+		upload_sprite(&image, &sprite224, &sharpness224_array);
+
+	if (y_res >= 240) {
 		upload_sprite(&image, &sprite, &sharpness_array);
+		if (x_res == 256)
+			upload_sprite(&image, &sprite, &sharp256240_array);
+	}
+
 
 	while (1) {
 		if (display_is_old) {
@@ -693,7 +729,7 @@ void sharpness()
 		}
 
 		if (frame_time > 0) {
-			draw_font(1, 230, 20, 0, 255, 0, "320x%s", sharpsel ? "224" : "240");
+			draw_font(1, x_res == 256 ? 192 : 230, 20, 0, 255, 0, "%dx%s", x_res, sharpsel ? "224" : "240");
 		       	frame_time--;
 		}
 
@@ -726,6 +762,7 @@ void convergence()
 				cnt = 0;
 			break;
 		}
+
 		switch (cnt) {
 		case 0: sprite.r = 128; sprite.g = 128; sprite.b = 128;
 			break;
@@ -775,10 +812,10 @@ void overscan()
 
 		GsSortRectangle(&box);
 
-		draw_menu_font(1, cnt, 1, 120, 114, "Top: %d pixels", box.y - YTOP224);
-		draw_menu_font(1, cnt, 2, 120, 122, "Bottom: %d pixels", (y_res - box.h - box.y) + YTOP224);
-		draw_menu_font(1, cnt, 3, 120, 130, "Left: %d pixels", box.x);
-		draw_menu_font(1, cnt, 4, 120, 138, "Right: %d pixels", (x_res - box.w - box.x));
+		draw_menu_font(1, cnt, 1, x_res / 2.6, 114, "Top: %d pixels", box.y - YTOP224);
+		draw_menu_font(1, cnt, 2, x_res / 2.6, 122, "Bottom: %d pixels", (y_res - box.h - box.y) + YTOP224);
+		draw_menu_font(1, cnt, 3, x_res / 2.6, 130, "Left: %d pixels", box.x);
+		draw_menu_font(1, cnt, 4, x_res / 2.6, 138, "Right: %d pixels", (x_res - box.w - box.x));
 
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
@@ -788,7 +825,7 @@ void overscan()
 			break;
 		case PAD_CROSS:
 			box.x = 0;
-			box.y = y_res == 224 ? 8 : 0;
+			box.y = YTOP224;
 			box.w = x_res;
 			box.h = y_res;
 			break;
