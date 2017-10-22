@@ -24,6 +24,7 @@ volatile int display_is_old;
 unsigned short input;
 
 unsigned char VMODE;
+unsigned char interlaced;
 unsigned short x_res,y_res; //not using GsScreenH because it can be only 240/480
 
 void load_background();
