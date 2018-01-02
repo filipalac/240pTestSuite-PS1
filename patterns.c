@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  */
 
 #include<psx.h>
-#include<psxgpu.h>
 
 #include"240p.h"
 #include"help.h"
@@ -37,7 +36,7 @@ void pluge()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -79,7 +78,7 @@ void color_bars()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -139,7 +138,7 @@ void smpte_color_bars()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -199,7 +198,7 @@ void color_bars_with_gray_reference()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(192, 192, 192);
 
 		switch (input_tap()) {
@@ -228,6 +227,9 @@ void color_bars_with_gray_reference()
 void color_bleed_check()
 {
 	char chk = 0;
+	int frame_time = 90;
+	unsigned short x_res_tmp = x_res;
+	char x_res_cnt = x_res == 256 ? 0 : 1;
 
 	GsImage image;
 	GsSprite sprite, spritechk;
@@ -237,7 +239,7 @@ void color_bleed_check()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res_tmp, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -250,30 +252,49 @@ void color_bleed_check()
 		case PAD_CROSS:
 			chk = !chk;
 			break;
+		case PAD_LEFT:
+			frame_time = 90;
+			x_res_cnt--;
+			if (x_res_cnt < 0)
+				x_res_cnt = 3;
+			break;
+		case PAD_RIGHT:
+			frame_time = 90;
+			x_res_cnt++;
+			if (x_res_cnt > 3)
+				x_res_cnt = 0;
+			break;
 		}
 
-		if (!chk) {
-			sprite.w = x_res == 256 ? 240 : 256;
-			sprite.x = 0;
-			sprite.tpage = 5;
-			GsSortSprite(&sprite);
-			if (x_res != 256) {
-				sprite.w = 64;
-				sprite.x = 256;
-				sprite.tpage = 6;
-				GsSortSprite(&sprite);
-			}
-		} else {
-			spritechk.w = x_res == 256 ? 240: 256;
-			spritechk.x = 0;
-			spritechk.tpage = 10;
-			GsSortSprite(&spritechk);
-			if (x_res != 256) {
-				spritechk.w = 64;
-				spritechk.x = 256;
-				spritechk.tpage = 11;
-				GsSortSprite(&spritechk);
-			}
+		switch (x_res_cnt) {
+		case 0: 
+			x_res_tmp = 256;
+			break;
+		case 1:
+		       	x_res_tmp = 320;
+			break;
+		case 2:
+			x_res_tmp = 384;
+			break;
+		case 3:
+			x_res_tmp = 640;
+			break;
+		}
+
+		for (char i = 2; i < (x_res_tmp / 16) - 2; i++) {
+			sprite.y = spritechk.y = 32;
+			sprite.x = spritechk.x = i * 16;
+			GsSortSprite(chk ? &spritechk : &sprite);
+		}
+
+		if (frame_time > 0) {
+			if (x_res_tmp == 640)
+				set_font_scale(SCALE_ONE * 2, 0);
+
+			//draw_font(0, x_res_tmp - 90, 20, 0, 255, 0, "%dx%d", x_res_tmp, y_res);
+			draw_font(0, x_res_tmp * 0.75, 20, 0, 255, 0, "%dx%d", x_res_tmp, y_res);
+			set_font_scale(0, 0);
+	       		frame_time--;
 		}
 
 		draw_list();
@@ -310,7 +331,7 @@ void grid()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -408,7 +429,7 @@ void linearity()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -516,7 +537,7 @@ void gray_ramp()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -566,7 +587,7 @@ void white_and_rgb_screens()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(r, g, b);
 
 		switch (input_tap()) {
@@ -690,7 +711,7 @@ void sharpness()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -750,12 +771,15 @@ void convergence()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
 		case PAD_TRIANGLE:
 			return;
+		case PAD_START:
+			draw_help(HELP_CONVERGENCE_FOCUS);
+			break;
 		case PAD_CROSS:
 			cnt++;
 			if (cnt == 7)
@@ -807,7 +831,7 @@ void overscan()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(239, 239, 239);
 
 		GsSortRectangle(&box);

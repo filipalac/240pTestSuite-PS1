@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,15 +73,23 @@ void draw_background()
 	back.w = 256; back.h = 256;
 	back.u = back.v = 0;
 
-	back.y = 0;
-	back.tpage = 13;
-	back.w = 256;
-	back.x = 0;
-	GsSortSprite(&back);
 	if (x_res != 256) {
-		back.w = 64;
-		back.x = 256;
+		back.y = 0;
 		back.tpage = 14;
+		back.w = 64;
+		back.u = 192;
+		back.x = 0;
+		GsSortSprite(&back);
+		back.tpage = 15;
+		back.w = 256;
+		back.x = 64;
+		back.u = 0;
+		GsSortSprite(&back);
+	} else {
+		back.y = 0;
+		back.tpage = 15;
+		back.w = 256;
+		back.x = 0;
 		GsSortSprite(&back);
 	}
 }
@@ -137,7 +145,7 @@ unsigned short input_tap()
 	return input;
 }
 
-void flip_buffer()
+void set_screen(unsigned short x_res, unsigned short y_res, unsigned char VMODE, unsigned char interlaced)
 {
 		static int dbuf;
 
@@ -155,7 +163,7 @@ void draw_list()
 
 		border.attribute = 0;
 		border.r = border.g = border.b = 0;
-		border.w = x_res;
+		border.w = 640;
 		border.x = 0;
 		border.y = 0;
 		border.h = y_res == 240 ? 0 : 8;
@@ -177,7 +185,7 @@ void video_options()
 	while (1) {
 		if (display_is_old) {
 		GsSortCls(0, 0, 0);
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSetVideoModeEx(x_res, 240, VMODE, 0, interlaced, 0);
 
 		draw_background();
@@ -226,14 +234,7 @@ void video_options()
 
 		draw_font(1, x_res / 2 - 14 * 5 / 2, 34, 0, 255, 0, "Video settings");
 
-		//short x = x_res == 256 ? 27 : 40;
 		short x = x_res == 256 ? 20 : 33;
-		/*
-		draw_menu_font(1, cnt, 1, x, 62, "Horizontal Resolution: %d", x_res);
-		draw_menu_font(1, cnt, 2, x, 70 + 3, "Vertical Resolution: %d%s", interlaced ? y_res * 2 : y_res, interlaced ? "i" : "p");
-		draw_menu_font(1, cnt, 3, x, 78 + 6, "Interlaced Video: %s", interlaced ? "On" : "Off");
-		draw_menu_font(1, cnt, 4, x, 86 + 9, "Video Norm: %s", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL");
-		*/
 
 		draw_menu_font(1, cnt, 1, x, 75, "Horizontal Resolution: %d", x_res);
 		draw_menu_font(1, cnt, 2, x, 85, "Vertical Resolution: %d%s", interlaced ? y_res * 2 : y_res, interlaced ? "i" : "p");
@@ -278,7 +279,7 @@ int main()
 	while (1) {
 		if (display_is_old) {
 		GsSortCls(0, 0, 0);
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 
 		draw_background();
 		gillian.x = x_res == 256 ? 177 : 221;
@@ -403,10 +404,6 @@ int main()
 			draw_menu_font(1, cnt, 12, x, 136, "Alternateting 240p/480i"); 
 			draw_menu_font(1, cnt, 13, x, 144, "Audio Sync Test"); 
 			draw_menu_font(1, cnt, 14, x, 152, "Help");
-			//if (interlaced)
-				//draw_menu_font(1, cnt, 15, 40, 160, "Video: %s %di", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res * 2);
-			//else
-				//draw_menu_font(1, cnt, 15, 40, 160, "Video: %s %dp", GsScreenM == VMODE_NTSC ? "NTSC" : "PAL", y_res);
 			if (interlaced)
 				draw_menu_font(1, cnt, 15, x, 160, "Video: %dx%di %s", x_res, y_res * 2, VMODE ? "PAL" : "NTSC");
 			else

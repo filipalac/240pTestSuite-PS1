@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ enum help {
 	HELP_IRE,
 	HELP_601CB,
 	HELP_SHARPNESS,
+	HELP_CONVERGENCE_FOCUS,
 	HELP_OVERSCAN,
 	HELP_SMPTE,
 	HELP_LINEARITY,
@@ -81,7 +82,7 @@ void draw_help(int option)
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 		draw_background();
 
@@ -105,7 +106,7 @@ void draw_help(int option)
 
 		switch (option) {
 		case HELP_CREDITS:
-			draw_font(1, x_res == 256 ? 188 : 235, 34, 255, 255, 255, "22.10.2017");
+			draw_font(1, x_res == 256 ? 188 : 235, 34, 255, 255, 255, "2.1.2018");
 
 			draw_font(1, x, 45, 0, 255, 0, "Code, Convergence and Focus Pattern");
 			draw_font(1, x, 55, 255, 255, 255, "Filip Alac");
@@ -234,6 +235,9 @@ void draw_help(int option)
 			draw_font(1, x, y += 8, 255, 255, 255, "You can toggle between");
 			draw_font(1, x, y += 8, 255, 255, 255, "vertical bars and");
 			draw_font(1, x, y += 8, 255, 255, 255, "checkerboard with 'X'.");
+			y += 8;
+			draw_font(1, x, y += 8, 255, 255, 255, "You can also traverse horizontal");
+			draw_font(1, x, y += 8, 255, 255, 255, "resolutions by 'LEFT' and 'RIGHT'.");
 			break;
 		case HELP_IRE:
 			center_title("100 IRE");
@@ -260,6 +264,21 @@ void draw_help(int option)
 			draw_font(1, x, y += 8, 255, 255, 255, "enhancement control, and most");
 			draw_font(1, x, y += 8, 255, 255, 255, "probably should be set to zero,");
 			draw_font(1, x, y += 8, 255, 255, 255, "or in the middle.");
+			break;
+		case HELP_CONVERGENCE_FOCUS:
+			center_title("CONVERGENCE & FOCUS");
+			draw_font(1, x, y += 8, 255, 255, 255, "With this pattern you can");
+			draw_font(1, x, y += 8, 255, 255, 255, "adjust focus and convergence");
+			draw_font(1, x, y += 8, 255, 255, 255, "on CRT display.");
+			y += 8;
+			draw_font(1, x, y += 8, 255, 255, 255, "For adjusting focus, it is");
+			draw_font(1, x, y += 8, 255, 255, 255, "best to select green pattern");
+			draw_font(1, x, y += 8, 255, 255, 255, "and look in the middle of");
+			draw_font(1, x, y += 8, 255, 255, 255, "the screen while you adjust");
+			draw_font(1, x, y += 8, 255, 255, 255, "focus.");
+			y += 8;
+			draw_font(1, x, y += 8, 255, 255, 255, "For adjusting convergence, it is");
+			draw_font(1, x, y += 8, 255, 255, 255, "best to select white pattern.");
 			break;
 		case HELP_OVERSCAN:
 			center_title("OVERSCAN");
@@ -350,6 +369,9 @@ void draw_help(int option)
 			draw_font(1, x, y += 8, 255, 255, 255, "auto-toggle each frame with the");
 			draw_font(1, x, y += 8, 255, 255, 255, "'X' button. A frame counter is");
 			draw_font(1, x, y += 8, 255, 255, 255, "also available with '[]'.");
+			y += 8;
+			draw_font(1, x, y += 8, 255, 255, 255, "You can also traverse horizontal");
+			draw_font(1, x, y += 8, 255, 255, 255, "resolutions by 'LEFT' and 'RIGHT'.");
 			break;
 		case HELP_STRIPES:
 			switch (page) {
@@ -384,6 +406,9 @@ void draw_help(int option)
 				draw_font(1, x, y += 8, 255, 255, 255, "distorted horizontaly, since");
 				draw_font(1, x, y += 8, 255, 255, 255, "all lines should be one pixel");
 				draw_font(1, x, y += 8, 255, 255, 255, "wide.");
+				y += 8;
+				draw_font(1, x, y += 8, 255, 255, 255, "You can also traverse horizontal");
+				draw_font(1, x, y += 8, 255, 255, 255, "resolutions by 'LEFT' and 'RIGHT'.");
 				break;
 			}
 			break;

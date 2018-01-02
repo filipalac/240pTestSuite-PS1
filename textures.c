@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
 #include"patterns/sharpness224.c"
 #include"patterns/lingrid.c"
 #include"patterns/checkerboard.c"
-#include"patterns/sonicback.c"
+#include"patterns/sonicsky.c"
 #include"patterns/sonicback1.c"
 #include"patterns/sonicback2.c"
 #include"patterns/sonicback3.c"

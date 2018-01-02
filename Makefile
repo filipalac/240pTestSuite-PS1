@@ -19,7 +19,7 @@ all:
 	bmp2tim textures/EBU100.bmp patterns/EBU100.tim 4 -org=320,0 -clut=912,480
 	bmp2tim textures/EBU75.bmp patterns/EBU75.tim 4 -org=640,0 -clut=912,481
 	bmp2tim textures/colorgray.bmp patterns/colorgray.tim 4 -org=320,0 -clut=912,480
-	bmp2tim textures/colorbleed.bmp patterns/colorbleed.tim 4 -org=320,0 -clut=912,480
+	bmp2tim textures/colorbleed.bmp patterns/colorbleed.tim 4 -org=640,256 -clut=912,480
 	bmp2tim textures/colorbleedchk.bmp patterns/colorbleedchk.tim 4 -org=640,0 -clut=912,481
 	bmp2tim textures/color.bmp patterns/color.tim 8 -org=320,0 -clut=768,485
 	bmp2tim textures/colorgrid.bmp patterns/colorgrid.tim 8 -org=640,0 -clut=768,486
@@ -30,35 +30,35 @@ all:
 	bmp2tim textures/linearity240pal.bmp patterns/linearity240pal.tim 4 -org=576,0 -noblack -clut=912,483
 	bmp2tim textures/linearityw256224.bmp patterns/linearityw256224.tim 4 -org=448,0 -noblack -clut=912,481
 	bmp2tim textures/linearityw256224pal.bmp patterns/linearityw256224pal.tim 4 -org=576,0 -noblack -clut=912,483
-	bmp2tim textures/linearitygriddot.bmp patterns/linearitygriddot.tim 4 -org=960,0 -noblack -clut=912,482
+	bmp2tim textures/linearitygriddot.bmp patterns/linearitygriddot.tim 4 -org=1000,256 -noblack -clut=912,482
 	bmp2tim textures/grayramp.bmp patterns/grayramp.tim 8 -org=320,0 -clut=768,480
 	bmp2tim textures/sharpness.bmp patterns/sharpness.tim 4 -org=320,0 -clut=912,480
 	bmp2tim textures/sharpness224.bmp patterns/sharpness224.tim 4 -org=448,0 -clut=912,481
 	bmp2tim textures/sharpnessw256224.bmp patterns/sharpnessw256224.tim 4 -org=448,0 -clut=912,481
 	bmp2tim textures/sharpnessw256240.bmp patterns/sharpnessw256240.tim 4 -org=320,0 -clut=912,480
 	bmp2tim textures/lingrid.bmp patterns/lingrid.tim 4 -org=704,0 -noblack -clut=912,487
-	bmp2tim textures/checkerboard.bmp patterns/checkerboard.tim 4 -org=320,0  -clut=912,480
-	bmp2tim textures/sonicback.bmp patterns/sonicback.tim 4 -org=640,256  -clut=912,489
+	bmp2tim textures/checkerboard.bmp patterns/checkerboard.tim 4 -org=896,256  -clut=912,480
 	bmp2tim textures/circle.bmp patterns/circle.tim 4 -org=320,0  -noblack -clut=912,480
 	bmp2tim textures/numbers.bmp patterns/numbers.tim 4 -org=640,0 -mpink -clut=912,484
 	#############################
-	bmp2tim textures/sonicback1.bmp patterns/sonicback1.tim 4 -org=320,0  -clut=912,481
-	bmp2tim textures/sonicback2.bmp patterns/sonicback2.tim 4 -org=384,0  -clut=912,482
-	bmp2tim textures/sonicback3.bmp patterns/sonicback3.tim 4 -org=320,256  -clut=912,483
-	bmp2tim textures/sonicback4.bmp patterns/sonicback4.tim 4 -org=384,256  -clut=912,484
+	bmp2tim textures/sonicsky.bmp patterns/sonicsky.tim 4 -org=832,256  -clut=912,499
+	bmp2tim textures/sonicback1.bmp patterns/sonicback1.tim 4 -org=640,0  -clut=912,481
+	bmp2tim textures/sonicback2.bmp patterns/sonicback2.tim 4 -org=640,128  -clut=912,482
+	bmp2tim textures/sonicback3.bmp patterns/sonicback3.tim 4 -org=640,256  -clut=912,483
+	bmp2tim textures/sonicback4.bmp patterns/sonicback4.tim 4 -org=640,384  -clut=912,484
 	#############################
-	bmp2tim textures/sonicfloor.bmp patterns/sonicfloor.tim 4 -org=448,256 -noblack -clut=912,485
-	bmp2tim textures/kiki.bmp patterns/kiki.tim 4 -org=640,0 -clut=912,486
-	bmp2tim textures/motoko.bmp patterns/motoko.tim 8 -org=320,0 -clut=768,480
-	bmp2tim textures/striped.bmp patterns/striped.tim 4 -org=640,0 -mpink -clut=912,487
-	bmp2tim textures/buzzbomber.bmp patterns/buzzbomber.tim 4 -org=800,0 -mpink -clut=912,490
-	bmp2tim textures/buzzbombershadow.bmp patterns/buzzbombershadow.tim 4 -org=800,320 -mpink -clut=912,491
-	bmp2tim textures/shadow.bmp patterns/shadow.tim 4 -org=960,0 -mpink -clut=912,492
+	bmp2tim textures/sonicfloor.bmp patterns/sonicfloor.tim 4 -org=768,256 -noblack -clut=912,485
+	bmp2tim textures/kiki.bmp patterns/kiki.tim 4 -org=704,0 -clut=912,486
+	bmp2tim textures/motoko.bmp patterns/motoko.tim 8 -org=768,0 -clut=768,480
+	bmp2tim textures/striped.bmp patterns/striped.tim 4 -org=1016,424 -mpink -clut=912,487
+	bmp2tim textures/buzzbomber.bmp patterns/buzzbomber.tim 4 -org=1004,384 -mpink -clut=912,490
+	bmp2tim textures/buzzbombershadow.bmp patterns/buzzbombershadow.tim 4 -org=1016,384 -mpink -clut=912,491
+	bmp2tim textures/shadow.bmp patterns/shadow.tim 4 -org=1004,424 -mpink -clut=912,492
 	bmp2tim textures/convergence.bmp patterns/convergence.tim 4 -org=320,0 -noblack -clut=912,490
 	bmp2tim textures/font.bmp patterns/font.tim 4 -mpink -org=960,256  -clut=960,321
-	bmp2tim textures/lagper.bmp patterns/lagper.tim 4 -mpink -org=320,0  -clut=912,490
-	bmp2tim textures/back.bmp patterns/back.tim 4 -org=832,0  -clut=960,510
-	bmp2tim textures/backw256.bmp patterns/backw256.tim 4 -org=832,0  -clut=960,510
+	bmp2tim textures/lagper.bmp patterns/lagper.tim 4 -mpink -org=992,424  -clut=912,490
+	bmp2tim textures/back.bmp patterns/back.tim 4 -org=944,0  -clut=960,510
+	bmp2tim textures/backw256.bmp patterns/backw256.tim 4 -org=960,0  -clut=960,510
 	bmp2tim textures/gillian.bmp patterns/gillian.tim 4 -org=1008,256 -mpink -clut=960,511
 	#############################
 	./tools/lz4compress ./patterns/grid224.tim ./patterns/grid224.lz4
@@ -91,7 +91,8 @@ all:
 	./tools/lz4compress ./patterns/sharpnessw256224.tim ./patterns/sharpnessw256224.lz4
 	./tools/lz4compress ./patterns/lingrid.tim ./patterns/lingrid.lz4
 	./tools/lz4compress ./patterns/checkerboard.tim ./patterns/checkerboard.lz4
-	./tools/lz4compress ./patterns/sonicback.tim ./patterns/sonicback.lz4
+	./tools/lz4compress ./patterns/sonicsky.tim ./patterns/sonicsky.lz4
+	./tools/lz4compress ./patterns/sonicsky.tim ./patterns/sonicsky.lz4
 	./tools/lz4compress ./patterns/sonicback1.tim ./patterns/sonicback1.lz4
 	./tools/lz4compress ./patterns/sonicback2.tim ./patterns/sonicback2.lz4
 	./tools/lz4compress ./patterns/sonicback3.tim ./patterns/sonicback3.lz4
@@ -142,7 +143,7 @@ all:
 	bin2c sharp256224 < patterns/sharpnessw256224.lz4 > ./patterns/sharpnessw256224.c
 	bin2c lingrid < patterns/lingrid.lz4 > ./patterns/lingrid.c
 	bin2c checkerboard < patterns/checkerboard.lz4 > ./patterns/checkerboard.c
-	bin2c sonicback < patterns/sonicback.lz4 > ./patterns/sonicback.c
+	bin2c sonicsky < patterns/sonicsky.lz4 > ./patterns/sonicsky.c
 	bin2c sonicback1 < patterns/sonicback1.lz4 > ./patterns/sonicback1.c
 	bin2c sonicback2 < patterns/sonicback2.lz4 > ./patterns/sonicback2.c
 	bin2c sonicback3 < patterns/sonicback3.lz4 > ./patterns/sonicback3.c

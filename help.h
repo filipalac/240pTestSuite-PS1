@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ enum help {
 	HELP_IRE,
 	HELP_601CB,
 	HELP_SHARPNESS,
+	HELP_CONVERGENCE_FOCUS,
 	HELP_OVERSCAN,
 	HELP_SMPTE,
 	HELP_LINEARITY,

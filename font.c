@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 
 #include"lz4.h"
 
+static int scalex, scaley;
+
 void load_custom_font()
 {
 	char data_buffer[4160];
@@ -46,6 +48,10 @@ void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g,
 	GsSprite spr;
 	char stringbuf[512];
 	char *string;
+
+	int fw = gs_calculate_scaled_size(5, scalex); //(8*scalex)/4096;
+	int fh = gs_calculate_scaled_size(8, scaley); //(8*scalex)/4096;
+	
 	
 	spr.x = x; spr.y = y;
 	spr.r = r; spr.g = g; spr.b = b;
@@ -54,6 +60,8 @@ void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g,
 	spr.cx = 960; spr.cy = 321;
 	spr.tpage = 31;
 	spr.w = 6; spr.h = 8;
+	spr.scalex = scalex;
+	spr.scaley = scaley;
 
 	sg_vsprintf(stringbuf, fmt, ap); //standard vsnprintf is slow
 	string = stringbuf;
@@ -75,17 +83,17 @@ void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g,
 
 			GsSortSprite(&spr);
 
-			spr.x += 5;
+			spr.x += fw;
 		}
 
 		if (*string == '\r')
 			spr.x = 0;
 		else if (*string == '\n') {
 			spr.x = x;
-			spr.y += spr.h;
+			spr.y += fh;
 		}
 		else if (*string == '\t')
-			spr.x += spr.w * 8;
+			spr.x += fw * 8;
 		string++;
 	}
 }
@@ -112,6 +120,13 @@ void draw_font(char shadow, short x, short y, unsigned char r, unsigned char g, 
 	draw_Vfont(shadow, x, y, r, g, b, fmt, ap);
 	va_end(ap);
 }
+
+void set_font_scale(int scale_x, int scale_y)
+{
+	scalex = scale_x;
+	scaley = scale_y;
+}
+
 
 void load_numbers()
 {

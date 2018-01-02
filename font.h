@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,5 +23,6 @@ void load_custom_font();
 void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g, unsigned char b, char *fmt, va_list ap);
 void draw_menu_font(char shadow, int count, int order, short x, short y, char *menu_name, ...);
 void draw_font(char shadow, short x, short y, unsigned char r, unsigned char g, unsigned char b, char *fmt, ...);
+void set_font_scale(int scale_x, int scale_y);
 void load_numbers();
 void draw_number(short x, short y, unsigned char r, unsigned char g, unsigned char b, char fmt);

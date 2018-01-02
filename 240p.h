@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,5 +31,5 @@ void load_background();
 void draw_background();
 void upload_sprite(GsImage *image, GsSprite *sprite, void *compressed_buffer);//decompress and upload image as sprite to vram
 unsigned short input_tap(); //is returning global variable input 
-void flip_buffer(); //double buffer
+void set_screen(unsigned short x_res, unsigned short y_res, unsigned char VMODE, unsigned char interlaced); //double buffer
 void draw_list();

@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 #include<psx.h>
 #include<psxspu.h>
-#include<psxgpu.h>
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -43,7 +42,7 @@ void grid_scroll_test()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -104,7 +103,7 @@ void backlight_zone()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		PSX_PollPad(0, &padbuf);
@@ -175,9 +174,12 @@ void horizontal_stripes()
 	char alternating = 0;
 	char even = 1;
 	char vertical = 0;
-	int i = 0;
-	int framecounter = 0;
+	int frame_counter = 0;
 	int frame = 0;
+	int frame_time = 90;
+	unsigned short x_res_tmp = x_res;
+	char x_res_cnt = x_res == 256 ? 0 : 1;
+
 
 	GsLine line;
 	line.r = line.g = line.b = 255;
@@ -186,13 +188,11 @@ void horizontal_stripes()
 
 	GsRectangle box;
 	box.r = box.g = box.b = 1;
-	box.x = 19; box.y = y_res - 30;
-	box.w = 47; box.h = 8;
 	box.attribute = ENABLE_TRANS | TRANS_MODE(0);
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res_tmp, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -208,20 +208,48 @@ void horizontal_stripes()
 			even = !even;
 			break;
 		case PAD_SQUARE:
-			framecounter = !framecounter;
+			frame_counter = !frame_counter;
 			break;
 		case PAD_UP:
 			vertical = !vertical;
 			break;
+		case PAD_LEFT:
+			frame_time = 90;
+			x_res_cnt--;
+			if (x_res_cnt < 0)
+				x_res_cnt = 3;
+			break;
+		case PAD_RIGHT:
+			frame_time = 90;
+			x_res_cnt++;
+			if (x_res_cnt > 3)
+				x_res_cnt = 0;
+			break;
 		}
+
+		switch (x_res_cnt) {
+		case 0: 
+			x_res_tmp = 256;
+			break;
+		case 1:
+		       	x_res_tmp = 320;
+			break;
+		case 2:
+			x_res_tmp = 384;
+			break;
+		case 3:
+			x_res_tmp = 640;
+			break;
+		}
+
 
 		if (alternating)
 			even = !even;
 
 		if (!vertical) {
 			line.x[0] = 0;
-			line.x[1] = 320;
-			for (i = 0; i < 256; i++) {
+			line.x[1] = x_res_tmp;
+			for (unsigned short i = 0; i < y_res; i++) {
 				if (even) {
 					if (!(i % 2)) {
 						line.y[0] = line.y[1] = i;
@@ -234,8 +262,8 @@ void horizontal_stripes()
 			}
 		} else {
 			line.y[0] = 0;
-			line.y[1] = 256;
-			for (i = 0; i < 320; i++) {
+			line.y[1] = y_res;
+			for (unsigned short i = 0; i < x_res_tmp; i++) {
 				if (even) {
 					if (!(i % 2)) {
 						line.x[0] = line.x[1] = i;
@@ -248,18 +276,39 @@ void horizontal_stripes()
 			}
 		} 
 
-		if (framecounter) {
+		if (frame_counter) {
 			frame++;
 			if (GsScreenM == VMODE_NTSC && frame > 59)
 				frame = 0;
 			else if (GsScreenM  == VMODE_PAL && frame > 49)
 				frame = 0;
+
+			box.x = x_res_tmp * 0.0625 - 1; box.y = y_res - 30;
+			box.w = x_res_tmp == 640 ? 47 * 2 : 47 ; box.h = 8;
+
+			if (x_res_tmp == 640)
+				set_font_scale(SCALE_ONE * 2, 0);
+
 			GsSortRectangle(&box);
-			draw_font(0, 20, y_res - 30, 255, 255, 255, "frame: %d", frame);
+			draw_font(0, x_res_tmp * 0.0625, y_res - 30, 255, 255, 255, "frame: %d", frame);
+			set_font_scale(0, 0);
+		}
+
+		if (frame_time > 0) {
+			box.x = x_res_tmp * 0.75 - 1; box.y = 20;
+			box.w = x_res_tmp == 640 ? 37 * 2 : 37 ; box.h = 8;
+
+			if (x_res_tmp == 640)
+				set_font_scale(SCALE_ONE * 2, 0);
+
+			GsSortRectangle(&box);
+			draw_font(0, x_res_tmp * 0.75, 20, 0, 255, 0, "%dx%d", x_res_tmp, y_res);
+			set_font_scale(0, 0);
+	       		frame_time--;
 		}
 
 		draw_list();
-		}     
+		}
 	}
 }
 
@@ -267,8 +316,11 @@ void checkerboard()
 {
 	char alternating = 0;
 	char even = 1;
-	char framecounter = 0;
+	char frame_counter = 0;
 	int frame = 0;
+	int frame_time = 90;
+	unsigned short x_res_tmp = x_res;
+	char x_res_cnt = x_res == 256 ? 0 : 1;
 
 	GsImage image;
 	GsSprite sprite;
@@ -277,13 +329,11 @@ void checkerboard()
 
 	GsRectangle box;
 	box.r = box.g = box.b = 1;
-	box.x = 19; box.y = y_res - 30;
-	box.w = 47; box.h = 8;
 	box.attribute = ENABLE_TRANS | TRANS_MODE(0);
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res_tmp, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -299,27 +349,77 @@ void checkerboard()
 			even = !even;
 			break;
 		case PAD_SQUARE:
-			framecounter = !framecounter;
+			frame_counter = !frame_counter;
+			break;
+		case PAD_LEFT:
+			frame_time = 90;
+			x_res_cnt--;
+			if (x_res_cnt < 0)
+				x_res_cnt = 3;
+			break;
+		case PAD_RIGHT:
+			frame_time = 90;
+			x_res_cnt++;
+			if (x_res_cnt > 3)
+				x_res_cnt = 0;
+			break;
+		}
+
+		switch (x_res_cnt) {
+		case 0: 
+			x_res_tmp = 256;
+			break;
+		case 1:
+		       	x_res_tmp = 320;
+			break;
+		case 2:
+			x_res_tmp = 384;
+			break;
+		case 3:
+			x_res_tmp = 640;
 			break;
 		}
 
 		if (alternating)
 			even = !even;
 
-		sprite.x = 0;
-		sprite.y = even - 1;
-		GsSortSprite(&sprite);
-		sprite.x = 160;
-		GsSortSprite(&sprite);
+		for (unsigned short i = 0; i < x_res_tmp; i += 80) {
+			for (unsigned short j = 0; j < y_res; j += 120) {
+				sprite.x = i;
+				sprite.y = j + even;
+				GsSortSprite(&sprite);
+			}
+		}
 
-		if (framecounter) {
+		if (frame_counter) {
 			frame++;
 			if (GsScreenM == VMODE_NTSC && frame > 59)
 				frame = 0;
 			else if (GsScreenM == VMODE_PAL && frame > 49)
 				frame = 0;
+
+			box.x = x_res_tmp * 0.0625 - 1; box.y = y_res - 30;
+			box.w = x_res_tmp == 640 ? 47 * 2 : 47 ; box.h = 8;
+
+			if (x_res_tmp == 640)
+				set_font_scale(SCALE_ONE * 2, 0);
+
 			GsSortRectangle(&box);
-			draw_font(0, 20, y_res - 30, 255, 255, 255, "frame: %d", frame);
+			draw_font(0, x_res_tmp * 0.0625, y_res - 30, 255, 255, 255, "frame: %d", frame);
+			set_font_scale(0, 0);
+		}
+
+		if (frame_time > 0) {
+			box.x = x_res_tmp * 0.75 - 1; box.y = 20;
+			box.w = x_res_tmp == 640 ? 37 * 2 : 37 ; box.h = 8;
+
+			if (x_res_tmp == 640)
+				set_font_scale(SCALE_ONE * 2, 0);
+
+			GsSortRectangle(&box);
+			draw_font(0, x_res_tmp * 0.75, 20, 0, 255, 0, "%dx%d", x_res_tmp, y_res);
+	       		frame_time--;
+			set_font_scale(0, 0);
 		}
 
 		draw_list();
@@ -334,8 +434,9 @@ void scroll_test()
 	int speed = 1;
 
 	GsImage image;
-	GsSprite back[4], floor, kiki;
+	GsSprite sonicsky, back[4], floor, kiki;
 
+	upload_sprite(&image, &sonicsky, &sonicsky_array);
 	upload_sprite(&image, &back[0], &sonicback1_array);
 	upload_sprite(&image, &back[1], &sonicback2_array);
 	upload_sprite(&image, &back[2], &sonicback3_array);
@@ -348,7 +449,7 @@ void scroll_test()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -382,12 +483,17 @@ void scroll_test()
 			if (i > 119)
 				i = 0;
 
-			back[i/30].x = 0;
-			back[0].u = back[1].u = back[2].u = back[3].u += speed;
-			GsSortSprite(&back[i/30]);
-			back[i/30].x = 256;
-			GsSortSprite(&back[i/30]);
 
+			back[0].y = back[1].y = back[2].y = back[3].y = 128;
+			back[i/30].x = sonicsky.x = 0;
+			back[0].u = back[1].u = back[2].u = back[3].u = sonicsky.u += speed;
+			GsSortSprite(&back[i/30]);
+			GsSortSprite(&sonicsky);
+			back[i/30].x = sonicsky.x = 256;
+			GsSortSprite(&back[i/30]);
+			GsSortSprite(&sonicsky);
+
+			floor.w = floor.h = 256;
 			floor.x = 0;
 			floor.y = y_res == 224 ? 112 : 128;
 			floor.u += 2 * speed;
@@ -399,20 +505,20 @@ void scroll_test()
 			if (abs(i) >= 512)
 				i = 0;
 
-			kiki.tpage = 10;
+			kiki.tpage = 11;
 			kiki.y = - 512 + i;
 			GsSortSprite(&kiki);
-			kiki.tpage = 26;
+			kiki.tpage = 27;
 			kiki.y = - 256 + i;
 			GsSortSprite(&kiki);
-			kiki.tpage = 10;
+			kiki.tpage = 11;
 			kiki.y = + i;
 			GsSortSprite(&kiki);
-			kiki.tpage = 26;
-			kiki.y = i+ 256;
+			kiki.tpage = 27;
+			kiki.y = i + 256;
 			GsSortSprite(&kiki);
-			kiki.tpage = 10;
-			kiki.y = i+ 512;
+			kiki.tpage = 11;
+			kiki.y = i + 512;
 			GsSortSprite(&kiki);
 		}
 
@@ -434,7 +540,7 @@ void striped_test(char drop_shadow)
 	char even = 0;
 
 	GsImage  image;
-	GsSprite motoko, striped, back[4], floor, check, shadow, buzzbomber, buzzbombershadow;
+	GsSprite motoko, striped, sonicsky, back[4], floor, check, shadow, buzzbomber, buzzbombershadow;
 
 	upload_sprite(&image, &striped, &striped_array);
 	if (drop_shadow) {
@@ -443,6 +549,7 @@ void striped_test(char drop_shadow)
 		upload_sprite(&image, &buzzbombershadow, &buzzbombershadow_array);
 	}
 
+	upload_sprite(&image, &sonicsky, &sonicsky_array);
 	upload_sprite(&image, &back[0], &sonicback1_array);
 	upload_sprite(&image, &back[1], &sonicback2_array);
 	upload_sprite(&image, &back[2], &sonicback3_array);
@@ -450,16 +557,14 @@ void striped_test(char drop_shadow)
 
 	upload_sprite(&image, &motoko, &motoko_array);
 
+	striped.x = striped.y = 8;
+
 	GsLine line;
 	line.r = line.g = line.b = 255;
-	line.x[0] = 0; line.y[0] = 0;
-	line.x[1] = 320; line.y[1] = 0;
-
-	striped.x = striped.y = 8;
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -532,16 +637,18 @@ void striped_test(char drop_shadow)
 			motoko.scalex = x_res == 256 ? 3276 : 0;
 			motoko.x = 0;
 			motoko.w = 255;
-			motoko.tpage = 5;
+			motoko.tpage = 12;
 			motoko.attribute = COLORMODE(COLORMODE_8BPP);
 			GsSortSprite(&motoko);
 			motoko.x = x_res == 256 ? 203 : 255;
 			motoko.w = 64;
-			motoko.tpage = 7;
+			motoko.tpage = 14;
 			GsSortSprite(&motoko);
 			break;
 		case 1:
-			for (unsigned int i = 0; i < 320; i++) {
+			line.x[0] = 0; line.y[0] = 0;
+			line.x[1] = 320; line.y[1] = 0;
+			for (unsigned short i = 0; i < x_res; i++) {
 				if (!(i % 2)) {
 					line.y[0] = line.y[1] = i;
 					GsSortLine(&line);
@@ -553,10 +660,13 @@ void striped_test(char drop_shadow)
 				upload_sprite(&image, &check, &checkerboard_array);
 				image_uploaded = 1;
 			}
-			check.x  = 0;
-			GsSortSprite(&check);
-			check.x  = 160;
-			GsSortSprite(&check);
+			for (unsigned short i = 0; i < x_res; i += 80) {
+				for (unsigned short j = 0; j < y_res; j += 120) {
+					check.x = i;
+					check.y = j;
+					GsSortSprite(&check);
+				}
+			}
 			break;
 		case 3:
 			if (!image_uploaded) {
@@ -571,11 +681,14 @@ void striped_test(char drop_shadow)
 			if (sonic_timer > 119)
 				sonic_timer = 0;
 
-			back[sonic_timer/30].x = 0;
-			back[0].u = back[1].u = back[2].u = back[3].u = striped.x;
+			back[0].y = back[1].y = back[2].y = back[3].y = 128;
+			back[sonic_timer/30].x = sonicsky.x = 0;
+			back[0].u = back[1].u = back[2].u = back[3].u = sonicsky.u = striped.x;
 			GsSortSprite(&back[sonic_timer/30]);
-			back[sonic_timer/30].x = 256;
+			GsSortSprite(&sonicsky);
+			back[sonic_timer/30].x = sonicsky.x = 256;
 			GsSortSprite(&back[sonic_timer/30]);
+			GsSortSprite(&sonicsky);
 
 			floor.x = 0;
 			floor.y = y_res == 224 ? 112 : 128;
@@ -634,7 +747,7 @@ void sound_test()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {
@@ -705,7 +818,7 @@ void passive_lag_test()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(255, 255, 255);
 
 		switch (input_tap()) {
@@ -809,7 +922,7 @@ void lag_test()
 
 	while (1) {
 		if (display_is_old) {
-		flip_buffer();
+		set_screen(x_res, 240, VMODE, interlaced);
 		GsSortCls(0, 0, 0);
 
 		switch (input_tap()) {

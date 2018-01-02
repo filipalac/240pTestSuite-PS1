@@ -1,6 +1,6 @@
 /*
  * 240p test suite
- * Copyright 2017 Filip Aláč(PS1)
+ * Copyright 2017-2018 Filip Aláč(PS1)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ extern unsigned char sharpness_array[];
 extern unsigned char sharpness224_array[];
 extern unsigned char lingrid_array[];
 extern unsigned char checkerboard_array[];
-extern unsigned char sonicback_array[];
+extern unsigned char sonicsky_array[];
 extern unsigned char sonicback1_array[];
 extern unsigned char sonicback2_array[];
 extern unsigned char sonicback3_array[];

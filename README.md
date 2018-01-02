@@ -37,7 +37,7 @@ Contributors
 [shmups]: http://shmups.system11.org/
 
 Copyright 2011-2016 Artemio Urbina  
-Copyright 2017 Filip Aláč
+Copyright 2017-2018 Filip Aláč
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
