@@ -276,6 +276,8 @@ int main()
 	QueryPAD(0, led_on, NULL, sizeof(led_on));
 	pad_escape_mode(0, 0); // Exit escape / configuration mode
 
+	CdSendCommand(CdlStop, 0); // Stop spinning cd drive motor
+
 	while (1) {
 		if (display_is_old) {
 		GsSortCls(0, 0, 0);

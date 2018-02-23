@@ -106,7 +106,7 @@ void draw_help(int option)
 
 		switch (option) {
 		case HELP_CREDITS:
-			draw_font(1, x_res == 256 ? 188 : 235, 34, 255, 255, 255, "2.1.2018");
+			draw_font(1, x_res == 256 ? 188 : 235, 34, 255, 255, 255, "23.2.2018");
 
 			draw_font(1, x, 45, 0, 255, 0, "Code, Convergence and Focus Pattern");
 			draw_font(1, x, 55, 255, 255, 255, "Filip Alac");
