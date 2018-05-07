@@ -30,6 +30,6 @@ unsigned short x_res,y_res; //not using GsScreenH because it can be only 240/480
 void load_background();
 void draw_background();
 void upload_sprite(GsImage *image, GsSprite *sprite, void *compressed_buffer);//decompress and upload image as sprite to vram
-unsigned short input_tap(); //is returning global variable input 
+unsigned short input_tap(); //is returning global variable input
 void set_screen(unsigned short x_res, unsigned short y_res, unsigned char VMODE, unsigned char interlaced); //double buffer
 void draw_list();

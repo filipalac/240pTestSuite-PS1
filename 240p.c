@@ -196,13 +196,13 @@ void video_options()
 		case PAD_DOWN:
 			if (cnt == 4)
 				cnt = 1;
-			else 
+			else
 				cnt++;
 			break;
 		case PAD_UP:
 			if (cnt == 1)
 				cnt = 4;
-			else 
+			else
 				cnt--;
 			break;
 		case PAD_CROSS:
@@ -270,7 +270,7 @@ int main()
 	char patterns = 0;
 	char cnt = 1;
 
-	pad_enable_vibration(0);	
+	pad_enable_vibration(0);
 	unsigned char led_on[] = {1,0x44,0,1,0x2, 0, 0, 0, 0}; //led on
 	pad_escape_mode(0, 1); // Enter escape / configuration mode
 	QueryPAD(0, led_on, NULL, sizeof(led_on));
@@ -351,7 +351,7 @@ int main()
 					break;
 				case 14: draw_help(HELP_GENERAL);
 				       break;
-				case 15: 
+				case 15:
 					video_options();
 					break;
 				case 16: draw_help(HELP_CREDITS);
@@ -393,41 +393,41 @@ int main()
 
 		if (!patterns) {
 			draw_menu_font(1, cnt, 1, x, 47, "Test Patterns>"); //shadow, menucounter, order, x, y, text
-			draw_menu_font(1, cnt, 2, x, 55, "Drop Shadow Test"); 
-			draw_menu_font(1, cnt, 3, x, 63, "Striped Sprite Test"); 
-			draw_menu_font(1, cnt, 4, x, 71, "Lag Test"); 
-			draw_menu_font(1, cnt, 5, x, 79, "Manual Lag Test"); 
-			draw_menu_font(1, cnt, 6, x, 88, "Scroll Test"); 
-			draw_menu_font(1, cnt, 7, x, 96, "Grid Scroll Test"); 
-			draw_menu_font(1, cnt, 8, x, 104, "Horizontal Stripes"); 
-			draw_menu_font(1, cnt, 9, x, 112, "Checkerboard"); 
-			draw_menu_font(1, cnt, 10, x, 120, "Backlit Zone Test"); 
-			draw_menu_font(1, cnt, 11, x, 128, "Sound Test"); 
-			draw_menu_font(1, cnt, 12, x, 136, "Alternateting 240p/480i"); 
-			draw_menu_font(1, cnt, 13, x, 144, "Audio Sync Test"); 
+			draw_menu_font(1, cnt, 2, x, 55, "Drop Shadow Test");
+			draw_menu_font(1, cnt, 3, x, 63, "Striped Sprite Test");
+			draw_menu_font(1, cnt, 4, x, 71, "Lag Test");
+			draw_menu_font(1, cnt, 5, x, 79, "Manual Lag Test");
+			draw_menu_font(1, cnt, 6, x, 88, "Scroll Test");
+			draw_menu_font(1, cnt, 7, x, 96, "Grid Scroll Test");
+			draw_menu_font(1, cnt, 8, x, 104, "Horizontal Stripes");
+			draw_menu_font(1, cnt, 9, x, 112, "Checkerboard");
+			draw_menu_font(1, cnt, 10, x, 120, "Backlit Zone Test");
+			draw_menu_font(1, cnt, 11, x, 128, "Sound Test");
+			draw_menu_font(1, cnt, 12, x, 136, "Alternateting 240p/480i");
+			draw_menu_font(1, cnt, 13, x, 144, "Audio Sync Test");
 			draw_menu_font(1, cnt, 14, x, 152, "Help");
 			if (interlaced)
 				draw_menu_font(1, cnt, 15, x, 160, "Video: %dx%di %s", x_res, y_res * 2, VMODE ? "PAL" : "NTSC");
 			else
 				draw_menu_font(1, cnt, 15, x, 160, "Video: %dx%dp %s", x_res, y_res, VMODE ? "PAL" : "NTSC");
-			draw_menu_font(1, cnt, 16, x, 182, "Credits"); 
+			draw_menu_font(1, cnt, 16, x, 182, "Credits");
 		}
 		if (patterns) {
 			draw_menu_font(1, cnt, 1, x, 47, "Pluge");
-			draw_menu_font(1, cnt, 2, x, 55, "Color Bars"); 
+			draw_menu_font(1, cnt, 2, x, 55, "Color Bars");
 			if (GsScreenM  == VMODE_NTSC)
-				draw_menu_font(1, cnt, 3, x, 63, "SMPTE Color Bars"); 
-			else 
-				draw_menu_font(1, cnt, 3, x, 63, "EBU Color Bars"); 
-			draw_menu_font(1, cnt, 4, x, 71, "Color Bars with Gray Scale"); 
-			draw_menu_font(1, cnt, 5, x, 79, "Color Bleed Check"); 
-			draw_menu_font(1, cnt, 6, x, 88, "Grid"); 
-			draw_menu_font(1, cnt, 7, x, 96, "Linearity"); 
-			draw_menu_font(1, cnt, 8, x, 104, "Gray Ramp"); 
-			draw_menu_font(1, cnt, 9, x, 112, "White & RGB Screens"); 
-			draw_menu_font(1, cnt, 10, x, 120, "Sharpness"); 
-			draw_menu_font(1, cnt, 11, x, 128, "Convergence & Focus"); 
-			draw_menu_font(1, cnt, 12, x, 136, "Overscan"); 
+				draw_menu_font(1, cnt, 3, x, 63, "SMPTE Color Bars");
+			else
+				draw_menu_font(1, cnt, 3, x, 63, "EBU Color Bars");
+			draw_menu_font(1, cnt, 4, x, 71, "Color Bars with Gray Scale");
+			draw_menu_font(1, cnt, 5, x, 79, "Color Bleed Check");
+			draw_menu_font(1, cnt, 6, x, 88, "Grid");
+			draw_menu_font(1, cnt, 7, x, 96, "Linearity");
+			draw_menu_font(1, cnt, 8, x, 104, "Gray Ramp");
+			draw_menu_font(1, cnt, 9, x, 112, "White & RGB Screens");
+			draw_menu_font(1, cnt, 10, x, 120, "Sharpness");
+			draw_menu_font(1, cnt, 11, x, 128, "Convergence & Focus");
+			draw_menu_font(1, cnt, 12, x, 136, "Overscan");
 		}
 
 
