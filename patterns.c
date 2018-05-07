@@ -31,7 +31,7 @@ void pluge()
 {
 	GsImage image;
 	GsSprite sprite;
-	
+
 	upload_sprite(&image, &sprite, &pluge_array);
 
 	while (1) {
@@ -186,7 +186,7 @@ void smpte_color_bars()
 
 		draw_list();
 		}
-	} 
+	}
 }
 
 void color_bars_with_gray_reference()
@@ -221,7 +221,7 @@ void color_bars_with_gray_reference()
 
 		draw_list();
 		}
-	} 
+	}
 }
 
 void color_bleed_check()
@@ -267,7 +267,7 @@ void color_bleed_check()
 		}
 
 		switch (x_res_cnt) {
-		case 0: 
+		case 0:
 			x_res_tmp = 256;
 			break;
 		case 1:
@@ -299,7 +299,7 @@ void color_bleed_check()
 
 		draw_list();
 		}
-	} 
+	}
 }
 
 void grid()
@@ -475,7 +475,7 @@ void linearity()
 				GsSortSprite(&griddot);
 			}
 		}
-		
+
 		switch (linsel) {
 		case 0:
 			sprite224.w = 256;
@@ -525,8 +525,8 @@ void linearity()
 
 		draw_list();
 		}
-	}  
-} 
+	}
+}
 
 void gray_ramp()
 {
@@ -605,7 +605,7 @@ void white_and_rgb_screens()
 		case PAD_CIRCLE:
 			if (cnt == 8)
 				cnt = 9;
-			else 
+			else
 				cnt = 8;
 			break;
 		}
@@ -682,7 +682,7 @@ void white_and_rgb_screens()
 				break;
 			}
 		}
-				
+
 		draw_list();
 		}
 	}
@@ -898,4 +898,4 @@ void overscan()
 		draw_list();
 		}
 	}
-}  
+}

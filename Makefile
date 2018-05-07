@@ -3,7 +3,7 @@ CDLIC_FILE = /usr/local/psxsdk/share/licenses/infoeur.dat
 all:
 	mkdir -p cd_root
 	mkdir -p patterns
-	mkdir -p binary 
+	mkdir -p binary
 	gcc -Wall -O3 -o ./tools/lz4compress ./tools/lz4compress.c lz4.c lz4hc.c
 	#############################
 	wav2vag ./resources/beep.wav ./resources/beep.raw -raw
@@ -24,8 +24,8 @@ all:
 	bmp2tim textures/color.bmp patterns/color.tim 8 -org=320,0 -clut=768,485
 	bmp2tim textures/colorgrid.bmp patterns/colorgrid.tim 8 -org=640,0 -clut=768,486
 	bmp2tim textures/colorgridw256.bmp patterns/colorgridw256.tim 8 -org=640,0 -clut=768,486
-	bmp2tim textures/pluge.bmp patterns/pluge.tim 4 -org=320,0 -clut=912,480 
-	bmp2tim textures/linearity.bmp patterns/linearity.tim 4 -org=320,0 -noblack -clut=912,480 
+	bmp2tim textures/pluge.bmp patterns/pluge.tim 4 -org=320,0 -clut=912,480
+	bmp2tim textures/linearity.bmp patterns/linearity.tim 4 -org=320,0 -noblack -clut=912,480
 	bmp2tim textures/linearity224.bmp patterns/linearity224.tim 4 -org=448,0 -noblack -clut=912,481
 	bmp2tim textures/linearity240pal.bmp patterns/linearity240pal.tim 4 -org=576,0 -noblack -clut=912,483
 	bmp2tim textures/linearityw256224.bmp patterns/linearityw256224.tim 4 -org=448,0 -noblack -clut=912,481

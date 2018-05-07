@@ -87,7 +87,7 @@ void grid_scroll_test()
 		}
 
 		draw_list();
-		}     
+		}
 	}
 }
 
@@ -165,7 +165,7 @@ void backlight_zone()
 		GsSortRectangle(&rectangle);
 
 		draw_list();
-		}     
+		}
 	}
 }
 
@@ -228,7 +228,7 @@ void horizontal_stripes()
 		}
 
 		switch (x_res_cnt) {
-		case 0: 
+		case 0:
 			x_res_tmp = 256;
 			break;
 		case 1:
@@ -274,7 +274,7 @@ void horizontal_stripes()
 					GsSortLine(&line);
 				}
 			}
-		} 
+		}
 
 		if (frame_counter) {
 			frame++;
@@ -366,7 +366,7 @@ void checkerboard()
 		}
 
 		switch (x_res_cnt) {
-		case 0: 
+		case 0:
 			x_res_tmp = 256;
 			break;
 		case 1:
@@ -423,7 +423,7 @@ void checkerboard()
 		}
 
 		draw_list();
-		}     
+		}
 	}
 }
 
@@ -523,7 +523,7 @@ void scroll_test()
 		}
 
 		draw_list();
-		}     
+		}
 	}
 }
 
@@ -573,14 +573,14 @@ void striped_test(char drop_shadow)
 		case PAD_START:
 			if (drop_shadow)
 				draw_help(HELP_SHADOW);
-			else 
+			else
 				draw_help(HELP_STRIPED);
 			break;
 		case PAD_CROSS:
 			image_uploaded = 0;
 			if (background != 3)
 				background++;
-			else 
+			else
 				background = 0;
 			break;
 		case PAD_SQUARE:
@@ -633,7 +633,7 @@ void striped_test(char drop_shadow)
 			}
 			GsSortCls(255, 255, 255);
 
-			motoko.y = y_res == 224 ? - 8 : 0; 
+			motoko.y = y_res == 224 ? - 8 : 0;
 			motoko.scalex = x_res == 256 ? 3276 : 0;
 			motoko.x = 0;
 			motoko.w = 255;
@@ -718,7 +718,7 @@ void striped_test(char drop_shadow)
 					orientation = !orientation;
 				}
 				else if ((padbuf.buttons & PAD_RIGHT && !orientation)
-					|| ( current_pad_x >= 24 && !orientation)) { 
+					|| ( current_pad_x >= 24 && !orientation)) {
 
 				       	buzzbomber.attribute = buzzbombershadow.attribute = H_FLIP;
 					orientation = !orientation;
@@ -734,8 +734,8 @@ void striped_test(char drop_shadow)
 		}
 
 		draw_list();
-		}     
-	} 
+		}
+	}
 }
 
 void sound_test()
@@ -796,7 +796,7 @@ void sound_test()
 		draw_menu_font(1, cnt, 2, center_x - 13 * 5 / 2 + 50, 120, "Right Channel");
 
 		draw_list();
-		}     
+		}
 	}
 }
 
@@ -953,7 +953,7 @@ void lag_test()
 		}
 
 		lagper.r = 255; lagper.g = 255; lagper.b = 255;
-		lagper.x = x_res / 2 - 16; lagper.y = 96; 
+		lagper.x = x_res / 2 - 16; lagper.y = 96;
 		GsSortSprite(&lagper);
 
 		if (offset > 36 + var || offset < - 36 - var) //Change direction
@@ -967,9 +967,9 @@ void lag_test()
 
 		if (offset == 1 || offset == - 1) { //one pixel off
 			lagper.r = 0; lagper.g = 255; lagper.b = 0;
-		} 
+		}
 
-		else if (offset == 0) { //Zero pixel off 
+		else if (offset == 0) { //Zero pixel off
 			if (sound)
 				SsKeyOn(0);
 
@@ -977,9 +977,9 @@ void lag_test()
 			if (variation) {
 				if (rand() % 2)
 					var = rand() % 7;
-				else 
+				else
 					var = - 1 * rand() % 7;
-			} else 
+			} else
 				var = 0;
 			if (pos != 10)
 				GsSortCls(255, 255, 255);
@@ -1003,7 +1003,7 @@ void lag_test()
 			lagper.x = x_res / 2 - 16 + offset;
 			lagper.y = 96;
 			GsSortSprite(&lagper);
-		} 
+		}
 
 		for (unsigned char i = 0; i <= pos && pos != 10; i++) { //draw top left table with offsets
 			if (clicks[i] != 99) {
@@ -1049,7 +1049,7 @@ void lag_test()
 
 			if (GsScreenM == VMODE_NTSC)
 				ms = (float)(1000.0/59.29);
-			else 
+			else
 				ms = (float)(1000.0/49.76);
 
 			float frames = (float)total / 10.0f;
@@ -1065,7 +1065,7 @@ void lag_test()
 
 			if (GsScreenM == VMODE_NTSC)
 				draw_font(1, x_res == 256 ? 20 : 45, 166, 0, 255, 0, "Keep in mind that frame is around 16.87 ms.");
-			else 
+			else
 				draw_font(1, x_res == 256 ? 20 : 45, 166, 0, 255, 0, "Keep in mind that frame is around 20.09 ms.");
 		}
 
@@ -1151,7 +1151,7 @@ void alternate_240p480i()
 
 				if (i % 4 == 0)
 					draw_font(0, 32 + 12 * 5 + x_offset, 40 + i * 8, 255, 255, 0, "%di at:", y_res * 2);
-				else 
+				else
 					draw_font(0, 32 + 12 * 5 + x_offset, 40 + i * 8, 255, 255, 0, "%dp at:", y_res);
 			}
 
@@ -1224,7 +1224,7 @@ void audio_sync_test()
 
 			if (status > 60)
 				dot.y++;
-			else 
+			else
 				dot.y--;
 		}
 
@@ -1262,6 +1262,6 @@ void audio_sync_test()
 		GsSortRectangle(&dot);
 
 		draw_list();
-		}     
+		}
 	}
 }

@@ -13,7 +13,7 @@ monitors via RGB.
 
 As a secondary target, the suite aims to provide tools for
 calibrating colors, black and white levels for specific console
-outputs and setups. 
+outputs and setups.
 
 This is free software, with full source code available under the GPL.
 
@@ -26,14 +26,14 @@ Contributors
 * Code: Filip Aláč
 * Main menu graphics: Asher
 * PSXSDK: Nextvolume
-* Advisor: Fudoh 
+* Advisor: Fudoh
 * Extra patterns and collaboration: Konsolkongen & [shmups] regulars
 
 
 [@Artemio]: https://twitter.com/Artemio
 [shmups]: http://shmups.system11.org/
 
-Copyright 2011-2016 Artemio Urbina  
+Copyright 2011-2016 Artemio Urbina
 Copyright 2017-2018 Filip Aláč
 
 This program is free software; you can redistribute it and/or modify
@@ -46,5 +46,5 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License 
+You should have received a copy of the GNU General Public License
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.

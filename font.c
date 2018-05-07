@@ -51,8 +51,8 @@ void draw_Vfont(char shadow, short x, short y, unsigned char r, unsigned char g,
 
 	int fw = gs_calculate_scaled_size(5, scalex); //(8*scalex)/4096;
 	int fh = gs_calculate_scaled_size(8, scaley); //(8*scalex)/4096;
-	
-	
+
+
 	spr.x = x; spr.y = y;
 	spr.r = r; spr.g = g; spr.b = b;
 	spr.attribute = COLORMODE(COLORMODE_4BPP);
@@ -145,7 +145,7 @@ void load_numbers()
 void draw_number(short x, short y, unsigned char r, unsigned char g, unsigned char b, char fmt)
 {
 	GsSprite spr;
-	
+
 	spr.x = x; spr.y = y;
 	spr.r = r; spr.g = g; spr.b = b;
 	spr.attribute = COLORMODE(COLORMODE_4BPP);
