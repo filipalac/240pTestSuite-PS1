@@ -1,6 +1,7 @@
 CDLIC_FILE = /usr/local/psxsdk/share/licenses/infousa.dat
 
 all: lz4compress audio tim compress_textures bin2c
+	mkdir binary
 	psx-gcc  -Wall -O3 -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
 	elf2exe 240p.elf 240p.exe
 	cp 240p.exe binary
@@ -28,7 +29,8 @@ lz4compress:
 audio:
 	wav2vag ./resources/beep.wav ./resources/beep.raw -raw
 tim:
-	bmp2tim ./textures/grid224.bmp ./patterns/grid224.tim 4 -org=320,0 -noblack -clut=912,480
+	mkdir patterns
+	bmp2tim textures/grid224.bmp patterns/grid224.tim 4 -org=320,0 -noblack -clut=912,480
 	bmp2tim textures/grid240.bmp patterns/grid240.tim 4 -org=448,0 -noblack -clut=912,481
 	bmp2tim textures/grid256.bmp patterns/grid256.tim 4 -org=576,0 -noblack -clut=912,482
 	bmp2tim textures/gridw256224.bmp patterns/gridw256224.tim 4 -org=320,0 -noblack -clut=912,480
@@ -186,6 +188,7 @@ bin2c:
 	bin2c convergence < patterns/convergence.lz4> ./patterns/convergence.c
 
 emulator: lz4compress audio tim compress_textures bin2c
+	mkdir binary
 	psx-gcc  -Wall -O3 -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
 	elf2exe 240p.elf 240p.exe
 	cp 240p.exe binary
@@ -197,6 +200,7 @@ emulator: lz4compress audio tim compress_textures bin2c
 	rm -f 240p.exe
 
 psx: lz4compress audio tim compress_textures bin2c
+	mkdir binary
 	psx-gcc  -Wall -O3 -DREAL_HW -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
 	elf2exe 240p.elf 240p.exe
 	cp 240p.exe binary
@@ -208,6 +212,7 @@ psx: lz4compress audio tim compress_textures bin2c
 	rm -f 240p.exe
 
 clean:
-	rm -f 240pTestSuitePS1.bin 240pTestSuitePS1.cue 240p.exe 240p.elf
-	rm -r binary/*
-	rm -r patterns/*
+	rm -f ./tools/lz4compress
+	rm -f ./resources/beep.raw ./resources/beep.h
+	rm -rf binary
+	rm -rf patterns
