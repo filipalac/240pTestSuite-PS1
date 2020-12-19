@@ -41,7 +41,7 @@ Contributors
 
 [@Artemio]: https://twitter.com/Artemio
 [shmups]: http://shmups.system11.org/
-[PSXSDK:]: https://github.com/filipalac/psxsdk
+[PSXSDK]: https://github.com/filipalac/psxsdk
 
 Copyright 2011-2016 Artemio Urbina
 Copyright 2017-2018 Filip Aláč
