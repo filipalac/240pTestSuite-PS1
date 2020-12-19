@@ -19,6 +19,14 @@ This is free software, with full source code available under the GPL.
 
 [240p test suite]: http://junkerhq.net/xrgb/index.php/240p_test_suite
 
+To use the test suite download release from github and burn .cue/.bin to CD.
+There are 2 versions, one for real console which stop cd drive and
+second one for emulators which doesn't(I got black screen in some emulators).
+Both releases are fixed with cdmage because mkpsxiso from psxsdk
+doesn't generate image correctly which may cause problems for some emulators.
+You need to have modchiped psx or use swap method.
+To compile suite you need to install [PSXSDK].
+
 
 Contributors
 ------------
@@ -26,14 +34,16 @@ Contributors
 * Code: Filip Aláč
 * Main menu graphics: Asher
 * PSXSDK: Nextvolume
+
 * Advisor: Fudoh
 * Extra patterns and collaboration: Konsolkongen & [shmups] regulars
 
 
 [@Artemio]: https://twitter.com/Artemio
 [shmups]: http://shmups.system11.org/
+[PSXSDK:]: https://github.com/filipalac/psxsdk
 
-Copyright 2011-2016 Artemio Urbina  
+Copyright 2011-2016 Artemio Urbina
 Copyright 2017-2018 Filip Aláč
 
 This program is free software; you can redistribute it and/or modify

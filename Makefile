@@ -1,14 +1,34 @@
-CDLIC_FILE = /usr/local/psxsdk/share/licenses/infoeur.dat
+CDLIC_FILE = /usr/local/psxsdk/share/licenses/infousa.dat
 
-all:
-	mkdir -p cd_root
-	mkdir -p patterns
-	mkdir -p binary
-	gcc -Wall -O3 -o ./tools/lz4compress ./tools/lz4compress.c lz4.c lz4hc.c
-	#############################
+all: lz4compress audio tim compress_textures bin2c
+	psx-gcc  -Wall -O3 -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
+	elf2exe 240p.elf 240p.exe
+	cp 240p.exe binary
+	systemcnf 240p.exe > binary/system.cnf
+	mkisofs -o ./binary/240p.hsf -V 240pTestSuite -sysid PLAYSTATION binary
+	cd ./binary && mkpsxiso 240p.hsf 240pTestSuitePS1-EMU.bin $(CDLIC_FILE);
+	rm -f ./binary/240p.hsf
+	rm -f 240p.elf
+	rm -f 240p.exe
+	###################
+	psx-gcc  -Wall -O3 -DREAL_HW -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
+	elf2exe 240p.elf 240p.exe
+	cp 240p.exe binary
+	systemcnf 240p.exe > binary/system.cnf
+	mkisofs -o ./binary/240p.hsf -V 240pTestSuite -sysid PLAYSTATION binary
+	cd ./binary && mkpsxiso 240p.hsf 240pTestSuitePS1.bin $(CDLIC_FILE);
+	rm -f ./binary/240p.hsf
+	rm -f ./binary/240p.exe
+	rm -f ./binary/system.cnf
+	rm -f ./240p.elf
+	rm -f ./240p.exe
+
+lz4compress:
+	gcc -Wall -O3 -o ./tools/lz4compress ./tools/lz4compress.c ./lz4.c ./lz4hc.c
+audio:
 	wav2vag ./resources/beep.wav ./resources/beep.raw -raw
-	#############################
-	bmp2tim textures/grid224.bmp patterns/grid224.tim 4 -org=320,0 -noblack -clut=912,480
+tim:
+	bmp2tim ./textures/grid224.bmp ./patterns/grid224.tim 4 -org=320,0 -noblack -clut=912,480
 	bmp2tim textures/grid240.bmp patterns/grid240.tim 4 -org=448,0 -noblack -clut=912,481
 	bmp2tim textures/grid256.bmp patterns/grid256.tim 4 -org=576,0 -noblack -clut=912,482
 	bmp2tim textures/gridw256224.bmp patterns/gridw256224.tim 4 -org=320,0 -noblack -clut=912,480
@@ -60,7 +80,7 @@ all:
 	bmp2tim textures/back.bmp patterns/back.tim 4 -org=944,0  -clut=960,510
 	bmp2tim textures/backw256.bmp patterns/backw256.tim 4 -org=960,0  -clut=960,510
 	bmp2tim textures/gillian.bmp patterns/gillian.tim 4 -org=1008,256 -mpink -clut=960,511
-	#############################
+compress_textures:
 	./tools/lz4compress ./patterns/grid224.tim ./patterns/grid224.lz4
 	./tools/lz4compress ./patterns/grid240.tim ./patterns/grid240.lz4
 	./tools/lz4compress ./patterns/grid256.tim ./patterns/grid256.lz4
@@ -112,7 +132,7 @@ all:
 	./tools/lz4compress ./patterns/backw256.tim ./patterns/backw256.lz4
 	./tools/lz4compress ./patterns/gillian.tim ./patterns/gillian.lz4
 	./tools/lz4compress ./patterns/convergence.tim ./patterns/convergence.lz4
-	#############################
+bin2c:
 	bin2c grid224 < patterns/grid224.lz4 > ./patterns/grid224.c
 	bin2c grid240 < patterns/grid240.lz4 > ./patterns/grid240.c
 	bin2c grid256 < patterns/grid256.lz4 > ./patterns/grid256.c
@@ -164,16 +184,30 @@ all:
 	bin2c beep < resources/beep.raw> ./resources/beep.h
 	bin2c gillian < patterns/gillian.lz4> ./patterns/gillian.c
 	bin2c convergence < patterns/convergence.lz4> ./patterns/convergence.c
-	#############################
+
+emulator: lz4compress audio tim compress_textures bin2c
 	psx-gcc  -Wall -O3 -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
 	elf2exe 240p.elf 240p.exe
-	cp 240p.exe cd_root
-	systemcnf 240p.exe > cd_root/system.cnf
-	mkisofs -o ./binary/240p.hsf -V 240pTestSuite -sysid PLAYSTATION cd_root
+	cp 240p.exe binary
+	systemcnf 240p.exe > binary/system.cnf
+	mkisofs -o ./binary/240p.hsf -V 240pTestSuite -sysid PLAYSTATION binary
+	cd ./binary && mkpsxiso 240p.hsf 240pTestSuitePS1-EMU.bin $(CDLIC_FILE);
+	rm -f ./binary/240p.hsf
+	rm -f 240p.elf
+	rm -f 240p.exe
+
+psx: lz4compress audio tim compress_textures bin2c
+	psx-gcc  -Wall -O3 -DREAL_HW -o 240p.elf 240p.c patterns.c tests.c font.c lz4.c textures.c help.c sg_string.c
+	elf2exe 240p.elf 240p.exe
+	cp 240p.exe binary
+	systemcnf 240p.exe > binary/system.cnf
+	mkisofs -o ./binary/240p.hsf -V 240pTestSuite -sysid PLAYSTATION binary
 	cd ./binary && mkpsxiso 240p.hsf 240pTestSuitePS1.bin $(CDLIC_FILE);
 	rm -f ./binary/240p.hsf
 	rm -f 240p.elf
 	rm -f 240p.exe
+
 clean:
 	rm -f 240pTestSuitePS1.bin 240pTestSuitePS1.cue 240p.exe 240p.elf
-	rm -fr cd_root patterns
+	rm -r binary/*
+	rm -r patterns/*

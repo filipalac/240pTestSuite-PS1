@@ -276,7 +276,9 @@ int main()
 	QueryPAD(0, led_on, NULL, sizeof(led_on));
 	pad_escape_mode(0, 0); // Exit escape / configuration mode
 
+#ifdef REAL_HW
 	CdSendCommand(CdlStop, 0); // Stop spinning cd drive motor
+#endif
 
 	while (1) {
 		if (display_is_old) {

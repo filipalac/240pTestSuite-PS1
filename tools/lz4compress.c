@@ -16,6 +16,9 @@ int main(int argc,char *argv[])
 	FILE *f;
 
        	f = fopen(argv[1], "r");
+	if (f == NULL) {
+		perror("input error");
+	}
 	fseek(f, 0, SEEK_END);
 	uint64_t fsize = ftell(f);
 	char *input = malloc(fsize);
@@ -30,6 +33,9 @@ int main(int argc,char *argv[])
 	printf("file compressed from %"PRIu64"B to %dB\n", fsize, compress_result);
 
        	f = fopen(argv[2], "w");
+	if (f == NULL) {
+		perror("output error");
+	}
 	fwrite(&fsize, 8, 1, f);
 	fwrite(compresed_data, compress_result, 1, f);
 	fclose(f);
